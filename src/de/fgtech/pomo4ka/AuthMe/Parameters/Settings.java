@@ -27,7 +27,6 @@ public class Settings extends Configuration {
     private void updateFile() {
         String key = "Misc.Hash";
         if (this.getString(key) == null) {
-            System.out.println("neger");
             Hash();
             this.save();
         }

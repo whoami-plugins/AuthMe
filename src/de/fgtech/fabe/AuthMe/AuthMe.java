@@ -1,4 +1,4 @@
-﻿package de.fgtech.fabe.AuthMe;
+package de.fgtech.fabe.AuthMe;
 
 import java.util.List;
 import java.io.File;
@@ -37,7 +37,7 @@ import de.fgtech.fabe.AuthMe.Sessions.SessionHandler;
 
 /**
  * AuthMe for Bukkit
- * 
+ *
  * @author fabe
  */
 public class AuthMe extends JavaPlugin {

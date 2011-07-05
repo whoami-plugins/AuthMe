@@ -1,4 +1,4 @@
-﻿package de.fgtech.fabe.AuthMe.Listener;
+package de.fgtech.fabe.AuthMe.Listener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import de.fgtech.fabe.AuthMe.MessageHandler.MessageHandler;
 
 /**
  * Handle events for all player related events
- * 
+ *
  * @author fabe
  */
 public class AuthMePlayerListener extends PlayerListener {
@@ -158,7 +158,7 @@ public class AuthMePlayerListener extends PlayerListener {
 		 * player.getInventory().getContents(); ItemStack[] arm =
 		 * player.getInventory().getArmorContents(); InventoryArmour invarm =
 		 * new InventoryArmour(inv, arm);
-		 * 
+		 *
 		 * plugin.cache.createInventoryArmourCache(player, invarm); }
 		 */
 

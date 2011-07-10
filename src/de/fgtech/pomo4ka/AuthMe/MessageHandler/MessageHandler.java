@@ -1,21 +1,26 @@
 package de.fgtech.pomo4ka.AuthMe.MessageHandler;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MessageHandler {
 
-	public static Logger l = Logger.getLogger("Minecraft");
-	
+	public static final Logger l = Logger.getLogger("Minecraft");
+
 	public static void showInfo(String message){
-		l.info("[AuthMe] " + message);
+		l.log(Level.INFO, "[AuthMe] "+ message);
 	}
-	
+
 	public static void showError(String message){
-		l.severe("[AuthMe] " + message);
+		l.log(Level.SEVERE, "[AuthMe] "+ message);
 	}
-	
+
 	public static void showWarning(String message){
-		l.warning("[AuthMe] " + message);
+		l.log(Level.WARNING, "[AuthMe] "+ message);
 	}
-	
+
+    public static void showStackTrace(Throwable e) {
+        l.log(Level.SEVERE, "", e);
+    }
+
 }

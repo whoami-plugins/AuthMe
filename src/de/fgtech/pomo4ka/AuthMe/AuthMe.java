@@ -720,7 +720,7 @@ public class AuthMe extends JavaPlugin {
 
 					MessageHandler.showInfo("Default file written: " + name);
 				} catch (Exception e) {
-					e.printStackTrace();
+                    MessageHandler.showStackTrace(e);
 				} finally {
 					try {
 						if (input != null)

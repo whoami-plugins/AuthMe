@@ -1,8 +1,5 @@
 package de.fgtech.pomo4ka.AuthMe.DataController.DataSource;
 
-
-import de.fgtech.pomo4ka.AuthMe.DataController.RegistrationCache.RegistrationCache;
-import de.fgtech.pomo4ka.AuthMe.DataController.RegistrationCache.RegistrationData;
 import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
 
 import java.sql.Connection;
@@ -10,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 
 public class MySQLData extends DataSource {
@@ -44,11 +42,10 @@ public class MySQLData extends DataSource {
 		setup();
 	}
 
-	public void connect() {
+	private void connect() {
 		try {
 			// This will load the MySQL driver
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			;
 			// Setup the connection with the DB
 			connection = DriverManager.getConnection("jdbc:mysql://" + host
 					+ ":" + port + "/" + database + "?" + "user=" + username
@@ -64,7 +61,7 @@ public class MySQLData extends DataSource {
 	}
 
 	// Setup up the tables, if they don't exist already
-	public void setup() {
+	private void setup() {
 		try {
 			if (connection.isClosed())
 				connect();
@@ -75,7 +72,7 @@ public class MySQLData extends DataSource {
 							+ columnName + " VARCHAR(20) NOT NULL, "
 							+ columnPassword + " VARCHAR(36) NOT NULL);");
 			preparedStatement.executeUpdate();
-			
+
 			preparedStatement = connection
             .prepareStatement("ALTER TABLE " + tableName
                     + " MODIFY "
@@ -89,8 +86,7 @@ preparedStatement.executeUpdate();
 	}
 
 	// You need to close the resultSet
-	@SuppressWarnings("unused")
-	private void close() {
+	public void close() {
 		try {
 			if (resultSet != null) {
 				resultSet.close();
@@ -109,8 +105,8 @@ preparedStatement.executeUpdate();
 	}
 
 	@Override
-	public RegistrationCache loadAllAuths() {
-		RegistrationCache regcache = new RegistrationCache();
+	public HashMap<String,String> loadAllAuths() {
+		HashMap<String,String> regcache = new HashMap<String,String>();
 		try {
 			if (connection.isClosed())
 				connect();
@@ -120,15 +116,15 @@ preparedStatement.executeUpdate();
 			resultSet = preparedStatement.executeQuery();
 
 			String user = "";
-			String password = "";
+			String pw = "";
 			while (resultSet.next()) {
 				user = resultSet.getString(columnName);
-				password = resultSet.getString(columnPassword);
+				pw = resultSet.getString(columnPassword);
 
-				if (user != "" && password != "") {
-					regcache.insert(new RegistrationData(user, password));
+				if (!user.equals("") && !pw.equals("")) {
+                    regcache.put(user, pw);
 					user = "";
-					password = "";
+					pw = "";
 				}
 			}
 

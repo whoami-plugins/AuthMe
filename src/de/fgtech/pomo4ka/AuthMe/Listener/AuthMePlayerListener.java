@@ -29,6 +29,7 @@ public class AuthMePlayerListener extends PlayerListener {
 		plugin = instance;
 	}
 
+    @Override
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
 		String playername = player.getName();
@@ -58,6 +59,7 @@ public class AuthMePlayerListener extends PlayerListener {
 		}
 	}
 
+    @Override
 	public void onPlayerKick(PlayerKickEvent event) {
 		Player player = event.getPlayer();
 
@@ -69,6 +71,7 @@ public class AuthMePlayerListener extends PlayerListener {
 		}
 	}
 
+    @Override
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
@@ -148,6 +151,7 @@ public class AuthMePlayerListener extends PlayerListener {
 		player.sendMessage(plugin.messages.getMessage("Alert.Login"));
 	}
 
+    @Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 
@@ -176,6 +180,7 @@ public class AuthMePlayerListener extends PlayerListener {
 		LoginTimeout.removeLoginTimeout(plugin, player);
 	}
 
+    @Override
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 
@@ -227,6 +232,7 @@ public class AuthMePlayerListener extends PlayerListener {
 		}
 	}
 
+    @Override
 	public void onPlayerChat(PlayerChatEvent event) {
 		Player player = event.getPlayer();
 
@@ -242,6 +248,7 @@ public class AuthMePlayerListener extends PlayerListener {
 		}
 	}
 
+    @Override
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		Player player = event.getPlayer();
 		String commandLabel = event.getMessage().split(" ")[0];
@@ -289,6 +296,7 @@ public class AuthMePlayerListener extends PlayerListener {
 		event.setCancelled(true);
 	}
 
+    @Override
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
 		Player player = event.getPlayer();
 		if (!plugin.checkAuth(player)) {
@@ -296,6 +304,7 @@ public class AuthMePlayerListener extends PlayerListener {
 		}
 	}
 
+    @Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		if (!plugin.checkAuth(player)) {

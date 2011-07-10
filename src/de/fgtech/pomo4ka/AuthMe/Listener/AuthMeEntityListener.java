@@ -10,7 +10,7 @@ import de.fgtech.pomo4ka.AuthMe.AuthMe;
 
 /**
  * AuthMe block listener
- * 
+ *
  * @author pomo4ka
  */
 public class AuthMeEntityListener extends EntityListener {
@@ -20,30 +20,32 @@ public class AuthMeEntityListener extends EntityListener {
 		this.plugin = plugin;
 	}
 
+    @Override
 	public void onEntityDamage(EntityDamageEvent event) {
 		Entity entity = event.getEntity();
 		if (!(entity instanceof Player)) {
 			return;
 		}
-		
+
 		Player player = (Player) entity;
 		if (!plugin.checkAuth(player)) {
 			event.setCancelled(true);
 		}
 	}
 
+    @Override
 	public void onEntityTarget(EntityTargetEvent event) {
 		Entity entity = event.getEntity();
 		if (entity instanceof Player) {
 			return;
 		}
-		
+
 		Entity target = event.getTarget();
 		if (!(target instanceof Player)) {
 			return;
 		}
 		Player targetPlayer = (Player) target;
-		
+
 		if (!plugin.checkAuth(targetPlayer)) {
 			event.setCancelled(true);
 		}

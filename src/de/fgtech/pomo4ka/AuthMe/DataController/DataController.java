@@ -4,13 +4,12 @@ import java.util.Map;
 
 
 import de.fgtech.pomo4ka.AuthMe.DataController.DataSource.DataSource;
-import de.fgtech.pomo4ka.AuthMe.DataController.RegistrationCache.RegistrationCache;
-import de.fgtech.pomo4ka.AuthMe.DataController.RegistrationCache.RegistrationData;
+import java.util.HashMap;
 
 public class DataController {
 
 	private DataSource datas;
-	private RegistrationCache regcache;
+	private HashMap<String,String> regcache;
 	private boolean caching = false;
 
 	public DataController(DataSource dataf, boolean caching) {
@@ -28,7 +27,7 @@ public class DataController {
 				customInformation);
 
 		if (caching && executed) {
-			regcache.insert(new RegistrationData(playername.toLowerCase(), hash));
+            regcache.put(playername.toLowerCase(), hash);
 		}
 		return executed;
 	}
@@ -46,28 +45,28 @@ public class DataController {
 		boolean executed = datas.updateAuth(playername.toLowerCase(), hash);
 
 		if (caching && executed) {
-			regcache.getPlayerData(playername.toLowerCase()).setHash(hash);
+            regcache.put(playername.toLowerCase(), hash);
 		}
 		return executed;
 	}
 
 	public String getHash(String playername) {
 		if (caching) {
-			return regcache.getHash(playername.toLowerCase());
+			return regcache.get(playername.toLowerCase());
 		}
 		return datas.loadHash(playername.toLowerCase());
 	}
 
 	public boolean isPlayerRegistered(String playername) {
 		if (caching) {
-			return regcache.isPlayerRegistered(playername.toLowerCase());
+			return regcache.containsKey(playername.toLowerCase());
 		}
 		return datas.isPlayerRegistered(playername.toLowerCase());
 	}
 
 	public int getRegisteredPlayerAmount() {
 		if (caching) {
-			return regcache.getRegisteredPlayerAmount();
+			return regcache.size();
 		}
 		return datas.getRegisteredPlayerAmount();
 	}

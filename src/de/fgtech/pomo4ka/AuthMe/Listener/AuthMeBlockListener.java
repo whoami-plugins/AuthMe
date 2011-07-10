@@ -19,6 +19,7 @@ public class AuthMeBlockListener extends BlockListener {
 		this.plugin = plugin;
 	}
 
+    @Override
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Player players = event.getPlayer();
 		if (!plugin.checkAuth(players)) {
@@ -27,6 +28,7 @@ public class AuthMeBlockListener extends BlockListener {
 	}
 
 	// NEW------------------
+    @Override
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player players = event.getPlayer();
 

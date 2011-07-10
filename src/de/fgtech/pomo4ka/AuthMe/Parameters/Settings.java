@@ -32,7 +32,7 @@ public class Settings extends Configuration {
         }
     }
 
-	public void writeFile() {
+	private void writeFile() {
 
 		MySQLConnectionHost();
 		MySQLConnectionPort();

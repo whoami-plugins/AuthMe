@@ -1,5 +1,6 @@
 package de.fgtech.pomo4ka.AuthMe.DataController.DataSource;
 
+import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,10 +11,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Scanner;
 
-
-import de.fgtech.pomo4ka.AuthMe.DataController.RegistrationCache.RegistrationCache;
-import de.fgtech.pomo4ka.AuthMe.DataController.RegistrationCache.RegistrationData;
 import de.fgtech.pomo4ka.AuthMe.Parameters.Settings;
+import java.util.HashMap;
 
 public class FlatfileData extends DataSource {
 
@@ -26,13 +25,14 @@ public class FlatfileData extends DataSource {
 		}
 	}
 
-	public RegistrationCache loadAllAuths() {
-		RegistrationCache regcache = new RegistrationCache();
+    @Override
+	public HashMap<String,String> loadAllAuths() {
+		HashMap<String,String> regcache = new HashMap<String,String>();
 
 		final File file = new File(Settings.AUTH_FILE);
 
 		if (!file.exists()) {
-			return new RegistrationCache();
+			return regcache;
 		}
 
 		Scanner reader = null;
@@ -50,11 +50,10 @@ public class FlatfileData extends DataSource {
 				if (in.length != 2) {
 					continue;
 				}
-				regcache.insert(new RegistrationData(in[0].toLowerCase(), in[1]));
-
+                regcache.put(in[0].toLowerCase(), in[1]);
 			}
 		} catch (final Exception e) {
-			e.printStackTrace();
+            MessageHandler.showStackTrace(e);
 		} finally {
 			if (reader != null) {
 				reader.close();
@@ -71,9 +70,9 @@ public class FlatfileData extends DataSource {
 			bw = new BufferedWriter(new FileWriter(Settings.AUTH_FILE, true));
 			bw.write(username + ":" + hash + "\r\n");
 			bw.flush();
-			
+
 		} catch (IOException e) {
-			e.printStackTrace();
+            MessageHandler.showStackTrace(e);
 			return false;
 		} finally {
 			if (bw != null)
@@ -102,14 +101,14 @@ public class FlatfileData extends DataSource {
 			reader = new BufferedReader(new FileReader(file));
 
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+            MessageHandler.showStackTrace(e);
 			return false;
 		}
 
 		try {
 			writer = new BufferedWriter(new FileWriter(tempFile));
 		} catch (IOException e) {
-			e.printStackTrace();
+            MessageHandler.showStackTrace(e);
 			return false;
 		}
 
@@ -147,9 +146,9 @@ public class FlatfileData extends DataSource {
 				System.out.println("Could not rename file");
 				return false;
 			}
-			
+
 		} catch (IOException e) {
-			e.printStackTrace();
+            MessageHandler.showStackTrace(e);
 			return false;
 		}
 		return true;
@@ -194,7 +193,7 @@ public class FlatfileData extends DataSource {
 				}
 			}
 		} catch (final Exception e) {
-			e.printStackTrace();
+            MessageHandler.showStackTrace(e);
 		} finally {
 			if (reader != null) {
 				reader.close();
@@ -236,7 +235,7 @@ public class FlatfileData extends DataSource {
 				counter++;
 			}
 		} catch (final Exception e) {
-			e.printStackTrace();
+            MessageHandler.showStackTrace(e);
 		} finally {
 			if (reader != null) {
 				reader.close();

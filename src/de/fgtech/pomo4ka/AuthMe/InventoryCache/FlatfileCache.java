@@ -1,5 +1,6 @@
 package de.fgtech.pomo4ka.AuthMe.InventoryCache;
 
+import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Scanner;
@@ -71,7 +72,7 @@ public class FlatfileCache {
 
 			writer.close();
 		} catch (final Exception e) {
-			e.printStackTrace();
+            MessageHandler.showStackTrace(e);
 		}
 	}
 
@@ -116,7 +117,7 @@ public class FlatfileCache {
 
 			}
 		} catch (final Exception e) {
-			e.printStackTrace();
+			MessageHandler.showStackTrace(e);
 		} finally {
 			if (reader != null) {
 				reader.close();

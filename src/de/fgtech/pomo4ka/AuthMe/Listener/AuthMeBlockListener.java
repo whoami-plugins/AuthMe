@@ -21,6 +21,9 @@ public class AuthMeBlockListener extends BlockListener {
 
     @Override
 	public void onBlockPlace(BlockPlaceEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
 		Player players = event.getPlayer();
 		if (!plugin.checkAuth(players)) {
 			event.setCancelled(true);
@@ -30,6 +33,9 @@ public class AuthMeBlockListener extends BlockListener {
 	// NEW------------------
     @Override
 	public void onBlockBreak(BlockBreakEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
 		Player players = event.getPlayer();
 
 		if (!plugin.checkAuth(players)) {

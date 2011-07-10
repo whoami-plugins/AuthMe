@@ -22,6 +22,9 @@ public class AuthMeEntityListener extends EntityListener {
 
     @Override
 	public void onEntityDamage(EntityDamageEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
 		Entity entity = event.getEntity();
 		if (!(entity instanceof Player)) {
 			return;
@@ -35,6 +38,9 @@ public class AuthMeEntityListener extends EntityListener {
 
     @Override
 	public void onEntityTarget(EntityTargetEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
 		Entity entity = event.getEntity();
 		if (entity instanceof Player) {
 			return;

@@ -31,6 +31,9 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerLogin(PlayerLoginEvent event) {
+        if(event.getResult() != Result.ALLOWED) {
+            return;
+        }
 		Player player = event.getPlayer();
 		String playername = player.getName();
 
@@ -61,6 +64,9 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerKick(PlayerKickEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
 		Player player = event.getPlayer();
 
 		// Just prevent kicks, if the player get this message and is logged in
@@ -73,6 +79,10 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerJoin(PlayerJoinEvent event) {
+        if(event.getPlayer() == null) {
+            return;
+        }
+
 		Player player = event.getPlayer();
 
 		// Is player really registered?
@@ -153,6 +163,9 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
+        if(event.getPlayer() == null) {
+            return;
+        }
 		Player player = event.getPlayer();
 
 		/*
@@ -182,6 +195,9 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerMove(PlayerMoveEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
 		Player player = event.getPlayer();
 
 		// Disables continuous falling down
@@ -234,6 +250,9 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerChat(PlayerChatEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
 		Player player = event.getPlayer();
 
 		if (plugin.settings.AllowUnregisteredChat()) {
@@ -250,6 +269,9 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
 		Player player = event.getPlayer();
 		String commandLabel = event.getMessage().split(" ")[0];
 
@@ -298,7 +320,10 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		Player player = event.getPlayer();
+		if(event.isCancelled()) {
+            return;
+        }
+        Player player = event.getPlayer();
 		if (!plugin.checkAuth(player)) {
 			event.setCancelled(true);
 		}
@@ -306,6 +331,9 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
 		Player player = event.getPlayer();
 		if (!plugin.checkAuth(player)) {
 			event.setCancelled(true);

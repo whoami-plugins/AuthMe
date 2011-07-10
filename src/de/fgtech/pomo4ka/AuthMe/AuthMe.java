@@ -148,31 +148,31 @@ public class AuthMe extends JavaPlugin {
 		PluginManager pm = getServer().getPluginManager();
 
 		pm.registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, playerListener,
-				Priority.Lowest, this);
+				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener,
-				Priority.Normal, this);
+				Priority.Lowest, this);
 		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener,
-				Priority.Normal, this);
+				Priority.Lowest, this);
 		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener,
-				Priority.Normal, this);
+				Priority.Lowest, this);
 		pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener,
-				Priority.Normal, this);
+				Priority.Lowest, this);
 		pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener,
-				Priority.Normal, this);
+				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLAYER_KICK, playerListener,
-				Priority.Normal, this);
+				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLAYER_PICKUP_ITEM, playerListener,
-				Priority.Normal, this);
+				Priority.Lowest, this);
 		pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener,
-				Priority.Normal, this);
+				Priority.Lowest, this);
 		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener,
-				Priority.Normal, this);
+				Priority.Lowest, this);
 		pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener,
-				Priority.Normal, this);
+				Priority.Lowest, this);
 		pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener,
-				Priority.Normal, this);
+				Priority.Lowest, this);
 		pm.registerEvent(Event.Type.ENTITY_TARGET, entityListener,
-				Priority.Normal, this);
+				Priority.Lowest, this);
 	}
 
 	public void onAuthMeReload() {
@@ -705,7 +705,7 @@ public class AuthMe extends JavaPlugin {
 		if (!actual.exists()) {
 
 			InputStream input = this.getClass().getResourceAsStream(
-					"/default/" + name);
+					"/" + name);
 			if (input != null) {
 				FileOutputStream output = null;
 

@@ -8,37 +8,34 @@ DataController:
     # Change it to false, if you want edit the datasource under runtime
     # Otherwise let it to true!
     CacheEnabled: true
-
+ 
     # Possible datasources are 'flatfile' or 'mysql'
     Datasource: flatfile
-
+ 
 ############################################################
 # +------------------------------------------------------+ #
 # |                       Misc                           | #
 # +------------------------------------------------------+ #
-############################################################
+############################################################ 
 Misc:
     # Set it to false, if you want let the player decide, if he should register or not
     ForceRegistration: true
-
-    # Encryption alghoritm for passwords("SHA256" or "MD5")
-    Hash: SHA256
-
-    # If it's enabled, it will kick non-registered players before they could join
-    # Make sure to edit the Kick.NotRegistered message in message file!
+    
+    # If it's enabled, it will kick non-registered players before they could join    
+    # Make sure to edit the Kick.NotRegistered message in message file!    
     KickNonRegistered: false
-
+    
     # What has to be done, if a player typed a wrong password?
     # Kick him (true) or only warn him with a simple chat message (false)
     KickOnWrongPassword: true
-
+    
     # Kick a non-loggedin player after he has reached a certain timeout (in seconds)
     # To disable this, set it to 0
     LoginTimeout: 90
-
+    
     # The intervall between Alert.Login and Alert.Registration messages (in seconds)
     AlertInterval: 5
-
+    
     # What should we allow unregistered players?
     AllowNonRegistered:
         Chat: false
@@ -49,57 +46,60 @@ Misc:
         WalkAroundSpawn:
             Enabled: false
             Radius: 20
-
+    
     # What should we allow players, that are not logged in?
     AllowNonLoggedIn:
         # Following commands are allowed to use (and every subcommand!)
         # Be warned: Additionally every subcommand gets allowed, e.g. '/uptime today'
         Commands:
         - uptime
-
+    
     # Following players get unrestricted access without the force to log in
     # Use this function, if you use plugins, that create bots (NPCs)!
     AllowPlayerUnrestrictedAccess:
     - Bot01
-
+    
+    # Algorithm hash (MD5, SHA256).
+    Hash: SHA256
+    
 ############################################################
 # +------------------------------------------------------+ #
 # |              Playername Restrictions                 | #
 # +------------------------------------------------------+ #
-############################################################
+############################################################ 
 PlayerNameRestriction:
     # The name of a player should have the following maximum and minimum length
     PlayerNameMaxLength: 20
     PlayerNameMinLength: 3
-
+    
     # The characters in the name can be restricted by RegEx
     # For more informatiom about RegEx visit
     # http://en.wikipedia.org/wiki/Regular_expression#POSIX_character_classes
-    PlayerNameRegex: '[a-zA-Z0-9_?]*'
-
+    PlayerNameRegex: '[a-zA-Z0-9_?]*' 
+ 
 ############################################################
 # +------------------------------------------------------+ #
 # |                   Login Sessions                     | #
 # +------------------------------------------------------+ #
-############################################################
+############################################################ 
 LoginSessions:
     # This function automatically logs players in, if they were already logged
     # in before their last disconnect
     Enabled: false
-
+    
     # Maximum timeout between last logout and new connection (in seconds)
     MaximalTimePeriod: 5
-
+    
     # Be warned: Only disable this, if you know what you are doing!
     # Disabling this makes AuthMe not comparing old and new IPs and maybe
     # grants access to name spoofers (in case you are in offline-mode)
-    IPCheckEnabled: true
-
+    IPCheckEnabled: true 
+ 
 ############################################################
 # +------------------------------------------------------+ #
 # |                     Commands                         | #
 # +------------------------------------------------------+ #
-############################################################
+############################################################ 
 Commands:
     Users:
         ChangePasswordEnabled: true
@@ -110,12 +110,12 @@ Commands:
     Ops:
         ReloadAuthsEnabled: true
         ResetAuthEnabled: true
-
+ 
 ############################################################
 # +------------------------------------------------------+ #
 # |                  MySQL Settings                      | #
 # +------------------------------------------------------+ #
-############################################################
+############################################################ 
 MySQL:
     # Connection details
     Connection:
@@ -124,7 +124,7 @@ MySQL:
         Database: test
         Username: root
         Password: pass
-
+    
     # Settings for a custom user table
     # Do not change this, if you don't have any scripts reqiring this
     Custom:

@@ -117,7 +117,7 @@ public class FlatfileCache {
 
 			}
 		} catch (final Exception e) {
-			MessageHandler.showStackTrace(e);
+            MessageHandler.showStackTrace(e);
 		} finally {
 			if (reader != null) {
 				reader.close();

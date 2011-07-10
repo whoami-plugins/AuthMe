@@ -17,20 +17,12 @@ public class Settings extends Configuration {
 	public Settings(File f) {
 		super(f);
 		if (f.exists()) {
-			load();
-            updateFile();
+		    load();
+		    updateFile();
 		} else {
-			writeFile();
+		    writeFile();
 		}
 	}
-
-    private void updateFile() {
-        String key = "Misc.Hash";
-        if (this.getString(key) == null) {
-            Hash();
-            this.save();
-        }
-    }
 
 	private void writeFile() {
 
@@ -49,7 +41,6 @@ public class Settings extends Configuration {
 		UnregisterEnabled();
 		ResetEnabled();
 		ReloadEnabled();
-        Hash();
 		ForceRegistration();
 		LoginSessionsEnabled();
 		MaximalTimePeriod();
@@ -73,6 +64,14 @@ public class Settings extends Configuration {
 		DataSource();
 
 		this.save();
+	}
+
+	private void updateFile() {
+	    String key = "Misc.Hash";
+	    if (this.getString(key) == null) {
+	        Hash();
+	        this.save();
+	    }
 	}
 
 	public boolean RegisterEnabled() {
@@ -252,9 +251,9 @@ public class Settings extends Configuration {
 	public String Hash() {
         String key = "Misc.Hash";
         if (this.getString(key) == null) {
-            this.setProperty(key, "SHA256");
+            this.setProperty(key, "MD5");
         }
-        return this.getString(key, "SHA256");
+        return this.getString(key, "MD5");
 }
 
 	public boolean CachingEnabled() {

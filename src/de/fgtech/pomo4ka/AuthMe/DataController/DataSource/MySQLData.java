@@ -86,7 +86,8 @@ preparedStatement.executeUpdate();
 	}
 
 	// You need to close the resultSet
-	public void close() {
+	@SuppressWarnings("unused")
+	private void close() {
 		try {
 			if (resultSet != null) {
 				resultSet.close();
@@ -122,7 +123,7 @@ preparedStatement.executeUpdate();
 				pw = resultSet.getString(columnPassword);
 
 				if (!user.equals("") && !pw.equals("")) {
-                    regcache.put(user, pw);
+                    regcache.put(user,pw);
 					user = "";
 					pw = "";
 				}

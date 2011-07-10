@@ -31,7 +31,7 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerLogin(PlayerLoginEvent event) {
-        if(event.getResult() != Result.ALLOWED) {
+        if(event.getResult() != Result.ALLOWED || event.getPlayer() == null) {
             return;
         }
 		Player player = event.getPlayer();
@@ -64,7 +64,7 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerKick(PlayerKickEvent event) {
-        if(event.isCancelled()) {
+        if(event.isCancelled() || event.getPlayer() == null) {
             return;
         }
 		Player player = event.getPlayer();
@@ -82,7 +82,6 @@ public class AuthMePlayerListener extends PlayerListener {
         if(event.getPlayer() == null) {
             return;
         }
-
 		Player player = event.getPlayer();
 
 		// Is player really registered?
@@ -113,7 +112,7 @@ public class AuthMePlayerListener extends PlayerListener {
 				return;
 			}
 		}
-
+        //plugin.playercache.setPlayerAuthenticated(player, true);
 		// --The following section is only executed for registered players!--
 
 		// Session Login
@@ -195,7 +194,7 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerMove(PlayerMoveEvent event) {
-        if(event.isCancelled()) {
+        if(event.isCancelled() || event.getPlayer() == null) {
             return;
         }
 		Player player = event.getPlayer();
@@ -250,7 +249,7 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerChat(PlayerChatEvent event) {
-        if(event.isCancelled()) {
+        if(event.isCancelled() || event.getPlayer() == null) {
             return;
         }
 		Player player = event.getPlayer();
@@ -269,9 +268,10 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if(event.isCancelled()) {
+        if(event.isCancelled() || event.getPlayer() == null) {
             return;
         }
+
 		Player player = event.getPlayer();
 		String commandLabel = event.getMessage().split(" ")[0];
 
@@ -292,6 +292,11 @@ public class AuthMePlayerListener extends PlayerListener {
 		if (commandLabel.equalsIgnoreCase("/l")) {
 			return;
 		}
+
+        //BukkitContrib fix; Those faggots can not code and should be lined up and shot
+        if(event.getMessage().equals("/0.1.3")) {
+            return;
+        }
 
 		// Enable commands specified per config
 		List<Object> cmdList = new ArrayList<Object>();
@@ -320,10 +325,10 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		if(event.isCancelled()) {
+        if(event.isCancelled() || event.getPlayer() == null) {
             return;
         }
-        Player player = event.getPlayer();
+		Player player = event.getPlayer();
 		if (!plugin.checkAuth(player)) {
 			event.setCancelled(true);
 		}
@@ -331,7 +336,7 @@ public class AuthMePlayerListener extends PlayerListener {
 
     @Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
-        if(event.isCancelled()) {
+        if(event.isCancelled() || event.getPlayer() == null) {
             return;
         }
 		Player player = event.getPlayer();

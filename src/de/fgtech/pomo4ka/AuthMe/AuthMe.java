@@ -150,29 +150,29 @@ public class AuthMe extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, playerListener,
 				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener,
-				Priority.Lowest, this);
+				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener,
-				Priority.Lowest, this);
+				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener,
-				Priority.Lowest, this);
+				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener,
-				Priority.Lowest, this);
+				Priority.Low, this);
 		pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener,
 				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLAYER_KICK, playerListener,
 				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLAYER_PICKUP_ITEM, playerListener,
-				Priority.Lowest, this);
+				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener,
-				Priority.Lowest, this);
+				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener,
-				Priority.Lowest, this);
+				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener,
-				Priority.Lowest, this);
+				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener,
-				Priority.Lowest, this);
+				Priority.Monitor, this);
 		pm.registerEvent(Event.Type.ENTITY_TARGET, entityListener,
-				Priority.Lowest, this);
+				Priority.Monitor, this);
 	}
 
 	public void onAuthMeReload() {

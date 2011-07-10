@@ -8,19 +8,18 @@ public class MessageHandler {
 	public static final Logger l = Logger.getLogger("Minecraft");
 
 	public static void showInfo(String message){
-		l.log(Level.INFO, "[AuthMe] "+ message);
+		l.log(Level.INFO, "[AuthMe] " + message);
 	}
 
 	public static void showError(String message){
-		l.log(Level.SEVERE, "[AuthMe] "+ message);
+		l.log(Level.SEVERE, "[AuthMe] " + message);
 	}
 
 	public static void showWarning(String message){
-		l.log(Level.WARNING, "[AuthMe] "+ message);
+		l.log(Level.WARNING, "[AuthMe] " + message);
 	}
 
-    public static void showStackTrace(Throwable e) {
-        l.log(Level.SEVERE, "", e);
+    public static void showStackTrace(Throwable t) {
+        l.log(Level.SEVERE, t.getMessage(), t);
     }
-
 }

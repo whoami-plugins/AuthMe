@@ -52,7 +52,7 @@ public class DataController {
 
 	public String getHash(String playername) {
 		if (caching) {
-			return regcache.get(playername.toLowerCase());
+            return regcache.get(playername.toLowerCase());
 		}
 		return datas.loadHash(playername.toLowerCase());
 	}
@@ -60,7 +60,7 @@ public class DataController {
 	public boolean isPlayerRegistered(String playername) {
 		if (caching) {
 			return regcache.containsKey(playername.toLowerCase());
-		}
+        }
 		return datas.isPlayerRegistered(playername.toLowerCase());
 	}
 

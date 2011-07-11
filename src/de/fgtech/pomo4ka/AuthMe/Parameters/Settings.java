@@ -46,6 +46,7 @@ public class Settings extends Configuration {
 		MaximalTimePeriod();
 		PlayerNameMinLength();
 		PlayerNameMaxLength();
+        Hash();
 		PlayerNameRegex();
 		WalkAroundSpawnEnabled();
 		WalkAroundSpawnRadius();
@@ -251,9 +252,9 @@ public class Settings extends Configuration {
 	public String Hash() {
         String key = "Misc.Hash";
         if (this.getString(key) == null) {
-            this.setProperty(key, "MD5");
+            this.setProperty(key, "SHA256");
         }
-        return this.getString(key, "MD5");
+        return this.getString(key, "SHA256");
 }
 
 	public boolean CachingEnabled() {

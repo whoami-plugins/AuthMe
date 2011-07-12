@@ -14,47 +14,47 @@ import de.fgtech.pomo4ka.AuthMe.AuthMe;
  * @author pomo4ka
  */
 public class AuthMeEntityListener extends EntityListener {
-	private final AuthMe plugin;
 
-	public AuthMeEntityListener(final AuthMe plugin) {
-		this.plugin = plugin;
-	}
+    private final AuthMe plugin;
+
+    public AuthMeEntityListener(final AuthMe plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
-	public void onEntityDamage(EntityDamageEvent event) {
+    public void onEntityDamage(EntityDamageEvent event) {
         if(event.isCancelled()) {
             return;
         }
-		Entity entity = event.getEntity();
-		if (!(entity instanceof Player)) {
-			return;
-		}
+        Entity entity = event.getEntity();
+        if(!(entity instanceof Player)) {
+            return;
+        }
 
-		Player player = (Player) entity;
-		if (!plugin.checkAuth(player)) {
-			event.setCancelled(true);
-		}
-	}
+        Player player = (Player) entity;
+        if(!plugin.checkAuth(player)) {
+            event.setCancelled(true);
+        }
+    }
 
     @Override
-	public void onEntityTarget(EntityTargetEvent event) {
+    public void onEntityTarget(EntityTargetEvent event) {
         if(event.isCancelled()) {
             return;
         }
-		Entity entity = event.getEntity();
-		if (entity instanceof Player) {
-			return;
-		}
+        Entity entity = event.getEntity();
+        if(entity instanceof Player) {
+            return;
+        }
 
-		Entity target = event.getTarget();
-		if (!(target instanceof Player)) {
-			return;
-		}
-		Player targetPlayer = (Player) target;
+        Entity target = event.getTarget();
+        if(!(target instanceof Player)) {
+            return;
+        }
+        Player targetPlayer = (Player) target;
 
-		if (!plugin.checkAuth(targetPlayer)) {
-			event.setCancelled(true);
-		}
-	}
-
+        if(!plugin.checkAuth(targetPlayer)) {
+            event.setCancelled(true);
+        }
+    }
 }

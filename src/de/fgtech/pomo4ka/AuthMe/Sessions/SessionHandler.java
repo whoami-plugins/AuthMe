@@ -7,55 +7,55 @@ import org.bukkit.entity.Player;
 
 public class SessionHandler {
 
-	private Map<String, Session> sessionTable = new HashMap<String, Session>();
-	private int maxSessionTime;
-	private boolean ipCheck;
+    private Map<String, Session> sessionTable = new HashMap<String, Session>();
+    private int maxSessionTime;
+    private boolean ipCheck;
 
-	public SessionHandler(int maxSessionTime, boolean ipCheck) {
-		this.maxSessionTime = maxSessionTime;
-		this.ipCheck = ipCheck;
-	}
+    public SessionHandler(int maxSessionTime, boolean ipCheck) {
+        this.maxSessionTime = maxSessionTime;
+        this.ipCheck = ipCheck;
+    }
 
-	public void createSession(Player player) {
-		long curTime = System.currentTimeMillis();
-		String recentHost = player.getAddress().getHostName();
-		
-		Session newSession = new Session(curTime, recentHost);
+    public void createSession(Player player) {
+        long curTime = System.currentTimeMillis();
+        String recentHost = player.getAddress().getHostName();
 
-		// remove possible sessions made before
-		removeSession(player);
+        Session newSession = new Session(curTime, recentHost);
 
-		sessionTable.put(player.getName().toLowerCase(), newSession);
-	}
+        // remove possible sessions made before
+        removeSession(player);
 
-	public void removeSession(Player player) {
-		if (sessionTable.containsKey(player.getName().toLowerCase())) {
-			sessionTable.remove(player.getName().toLowerCase());
-		}
-	}
+        sessionTable.put(player.getName().toLowerCase(), newSession);
+    }
 
-	public boolean isSessionValid(Player player) {
-		if (!sessionTable.containsKey(player.getName().toLowerCase())) {
-			return false;
-		}
-		String recentHost = player.getAddress().getHostName();
-		Session session = sessionTable.get(player.getName().toLowerCase());
-		long timeSpan = System.currentTimeMillis() - session.getTime();
+    public void removeSession(Player player) {
+        if(sessionTable.containsKey(player.getName().toLowerCase())) {
+            sessionTable.remove(player.getName().toLowerCase());
+        }
+    }
 
-		// timeout already reached?!
-		if (timeSpan < (maxSessionTime * 1000)) {
-			if (ipCheck) {
-				if (session.getAddress().equals(recentHost)) {
-					return true;
-				}
-			} else {
-				return true;
-			}
-		} else {
-			// Session timed out, so we can remove it now
-			removeSession(player);
-		}
+    public boolean isSessionValid(Player player) {
+        if(!sessionTable.containsKey(player.getName().toLowerCase())) {
+            return false;
+        }
+        String recentHost = player.getAddress().getHostName();
+        Session session = sessionTable.get(player.getName().toLowerCase());
+        long timeSpan = System.currentTimeMillis() - session.getTime();
 
-		return false;
-	}
+        // timeout already reached?!
+        if(timeSpan < (maxSessionTime * 1000)) {
+            if(ipCheck) {
+                if(session.getAddress().equals(recentHost)) {
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        } else {
+            // Session timed out, so we can remove it now
+            removeSession(player);
+        }
+
+        return false;
+    }
 }

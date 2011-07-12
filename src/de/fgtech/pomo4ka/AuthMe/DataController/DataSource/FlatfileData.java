@@ -16,232 +16,234 @@ import java.util.HashMap;
 
 public class FlatfileData extends DataSource {
 
-	public FlatfileData() {
-		String authFolder = Settings.AUTH_FILE.substring(0,
-				Settings.AUTH_FILE.lastIndexOf("/"));
-		final File folder = new File(authFolder);
-		if (!folder.exists()) {
-			folder.mkdirs();
-		}
-	}
+    public FlatfileData() {
+        String authFolder = Settings.AUTH_FILE.substring(0,
+                Settings.AUTH_FILE.lastIndexOf("/"));
+        final File folder = new File(authFolder);
+        if(!folder.exists()) {
+            folder.mkdirs();
+        }
+    }
 
     @Override
-	public HashMap<String,String> loadAllAuths() {
-		HashMap<String,String> regcache = new HashMap<String,String>();
+    public HashMap<String, String> loadAllAuths() {
+        HashMap<String, String> regcache = new HashMap<String, String>();
 
-		final File file = new File(Settings.AUTH_FILE);
+        final File file = new File(Settings.AUTH_FILE);
 
-		if (!file.exists()) {
-			return regcache;
-		}
+        if(!file.exists()) {
+            return regcache;
+        }
 
-		Scanner reader = null;
-		try {
-			reader = new Scanner(file);
-			while (reader.hasNextLine()) {
-				final String line = reader.nextLine();
+        Scanner reader = null;
+        try {
+            reader = new Scanner(file);
+            while(reader.hasNextLine()) {
+                final String line = reader.nextLine();
 
-				if (!line.contains(":")) {
-					continue;
-				}
+                if(!line.contains(":")) {
+                    continue;
+                }
 
-				final String[] in = line.split(":");
+                final String[] in = line.split(":");
 
-				if (in.length != 2) {
-					continue;
-				}
+                if(in.length != 2) {
+                    continue;
+                }
                 regcache.put(in[0].toLowerCase(), in[1]);
-			}
-		} catch (final Exception e) {
+            }
+        } catch(final Exception e) {
             MessageHandler.showStackTrace(e);
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
-		}
-		return regcache;
-	}
+        } finally {
+            if(reader != null) {
+                reader.close();
+            }
+        }
+        return regcache;
+    }
 
-	@Override
-	public boolean saveAuth(String username, String hash, Map<String, String> customInformation) {
-		BufferedWriter bw = null;
+    @Override
+    public boolean saveAuth(String username, String hash,
+            Map<String, String> customInformation) {
+        BufferedWriter bw = null;
 
-		try {
-			bw = new BufferedWriter(new FileWriter(Settings.AUTH_FILE, true));
-			bw.write(username + ":" + hash + "\r\n");
-			bw.flush();
+        try {
+            bw = new BufferedWriter(new FileWriter(Settings.AUTH_FILE, true));
+            bw.write(username + ":" + hash + "\r\n");
+            bw.flush();
 
-		} catch (IOException e) {
+        } catch(IOException e) {
             MessageHandler.showStackTrace(e);
-			return false;
-		} finally {
-			if (bw != null)
-				try {
-					bw.close();
-				} catch (IOException e) {
-					return false;
-				}
-		}
-		return true;
-	}
+            return false;
+        } finally {
+            if(bw != null) {
+                try {
+                    bw.close();
+                } catch(IOException e) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public boolean removeAuth(String username) {
+    @Override
+    public boolean removeAuth(String username) {
 
-		File file = new File(Settings.AUTH_FILE);
-		File tempFile = new File(Settings.AUTH_FILE + ".tmp");
+        File file = new File(Settings.AUTH_FILE);
+        File tempFile = new File(Settings.AUTH_FILE + ".tmp");
 
-		if (!file.exists()) {
-			return false;
-		}
+        if(!file.exists()) {
+            return false;
+        }
 
-		BufferedReader reader = null;
-		BufferedWriter writer = null;
-		try {
-			reader = new BufferedReader(new FileReader(file));
+        BufferedReader reader = null;
+        BufferedWriter writer = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
 
-		} catch (FileNotFoundException e) {
+        } catch(FileNotFoundException e) {
             MessageHandler.showStackTrace(e);
-			return false;
-		}
+            return false;
+        }
 
-		try {
-			writer = new BufferedWriter(new FileWriter(tempFile));
-		} catch (IOException e) {
+        try {
+            writer = new BufferedWriter(new FileWriter(tempFile));
+        } catch(IOException e) {
             MessageHandler.showStackTrace(e);
-			return false;
-		}
+            return false;
+        }
 
-		String currentLine;
-		try {
-			while ((currentLine = reader.readLine()) != null) {
-				String line = currentLine.trim();
+        String currentLine;
+        try {
+            while((currentLine = reader.readLine()) != null) {
+                String line = currentLine.trim();
 
-				if (!line.contains(":")) {
-					continue;
-				}
+                if(!line.contains(":")) {
+                    continue;
+                }
 
-				final String[] in = line.split(":");
+                final String[] in = line.split(":");
 
-				if (in.length != 2) {
-					continue;
-				}
+                if(in.length != 2) {
+                    continue;
+                }
 
-				if (in[0].equals(username))
-					continue;
-				writer.write(currentLine + "\r\n");
-			}
+                if(in[0].equals(username)) {
+                    continue;
+                }
+                writer.write(currentLine + "\r\n");
+            }
 
-			writer.close();
-			reader.close();
+            writer.close();
+            reader.close();
 
-			// Delete the original file
-			if (!file.delete()) {
-				System.out.println("Could not delete file");
-				return false;
-			}
+            // Delete the original file
+            if(!file.delete()) {
+                System.out.println("Could not delete file");
+                return false;
+            }
 
-			// Rename the new file to the filename the original file had.
-			if (!tempFile.renameTo(file)){
-				System.out.println("Could not rename file");
-				return false;
-			}
+            // Rename the new file to the filename the original file had.
+            if(!tempFile.renameTo(file)) {
+                System.out.println("Could not rename file");
+                return false;
+            }
 
-		} catch (IOException e) {
+        } catch(IOException e) {
             MessageHandler.showStackTrace(e);
-			return false;
-		}
-		return true;
-	}
+            return false;
+        }
+        return true;
+    }
 
-	@Override
-	public boolean updateAuth(String username, String hash) {
-		boolean checkRem = removeAuth(username);
-		boolean checkSave = saveAuth(username, hash, null);
-		if(checkRem && checkSave){
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean updateAuth(String username, String hash) {
+        boolean checkRem = removeAuth(username);
+        boolean checkSave = saveAuth(username, hash, null);
+        if(checkRem && checkSave) {
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public String loadHash(String playername) {
-		final File file = new File(Settings.AUTH_FILE);
+    @Override
+    public String loadHash(String playername) {
+        final File file = new File(Settings.AUTH_FILE);
 
-		if (!file.exists()) {
-			return null;
-		}
+        if(!file.exists()) {
+            return null;
+        }
 
-		Scanner reader = null;
-		try {
-			reader = new Scanner(file);
-			while (reader.hasNextLine()) {
-				final String line = reader.nextLine();
+        Scanner reader = null;
+        try {
+            reader = new Scanner(file);
+            while(reader.hasNextLine()) {
+                final String line = reader.nextLine();
 
-				if (!line.contains(":")) {
-					continue;
-				}
+                if(!line.contains(":")) {
+                    continue;
+                }
 
-				final String[] in = line.split(":");
+                final String[] in = line.split(":");
 
-				if (in.length != 2) {
-					continue;
-				}
+                if(in.length != 2) {
+                    continue;
+                }
 
-				if (in[0].equals(playername)) {
-					return in[1];
-				}
-			}
-		} catch (final Exception e) {
+                if(in[0].equals(playername)) {
+                    return in[1];
+                }
+            }
+        } catch(final Exception e) {
             MessageHandler.showStackTrace(e);
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
-		}
-		return null;
-	}
+        } finally {
+            if(reader != null) {
+                reader.close();
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public boolean isPlayerRegistered(String playername) {
-		return (loadHash(playername) != null ? true : false);
-	}
+    @Override
+    public boolean isPlayerRegistered(String playername) {
+        return (loadHash(playername) != null ? true : false);
+    }
 
-	@Override
-	public int getRegisteredPlayerAmount() {
-		int counter = 0;
-		final File file = new File(Settings.AUTH_FILE);
+    @Override
+    public int getRegisteredPlayerAmount() {
+        int counter = 0;
+        final File file = new File(Settings.AUTH_FILE);
 
-		if (!file.exists()) {
-			return 0;
-		}
+        if(!file.exists()) {
+            return 0;
+        }
 
-		Scanner reader = null;
-		try {
-			reader = new Scanner(file);
-			while (reader.hasNextLine()) {
-				final String line = reader.nextLine();
+        Scanner reader = null;
+        try {
+            reader = new Scanner(file);
+            while(reader.hasNextLine()) {
+                final String line = reader.nextLine();
 
-				if (!line.contains(":")) {
-					continue;
-				}
+                if(!line.contains(":")) {
+                    continue;
+                }
 
-				final String[] in = line.split(":");
+                final String[] in = line.split(":");
 
-				if (in.length != 2) {
-					continue;
-				}
+                if(in.length != 2) {
+                    continue;
+                }
 
-				counter++;
-			}
-		} catch (final Exception e) {
+                counter++;
+            }
+        } catch(final Exception e) {
             MessageHandler.showStackTrace(e);
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
-		}
-		return counter;
-	}
-
+        } finally {
+            if(reader != null) {
+                reader.close();
+            }
+        }
+        return counter;
+    }
 }

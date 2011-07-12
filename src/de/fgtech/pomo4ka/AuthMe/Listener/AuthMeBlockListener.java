@@ -13,34 +13,34 @@ import de.fgtech.pomo4ka.AuthMe.AuthMe;
  * @author pomo4ka
  */
 public class AuthMeBlockListener extends BlockListener {
-	private final AuthMe plugin;
 
-	public AuthMeBlockListener(final AuthMe plugin) {
-		this.plugin = plugin;
-	}
+    private final AuthMe plugin;
+
+    public AuthMeBlockListener(final AuthMe plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
-	public void onBlockPlace(BlockPlaceEvent event) {
+    public void onBlockPlace(BlockPlaceEvent event) {
         if(event.isCancelled()) {
             return;
         }
-		Player players = event.getPlayer();
-		if (!plugin.checkAuth(players)) {
-			event.setCancelled(true);
-		}
-	}
+        Player players = event.getPlayer();
+        if(!plugin.checkAuth(players)) {
+            event.setCancelled(true);
+        }
+    }
 
-	// NEW------------------
+    // NEW------------------
     @Override
-	public void onBlockBreak(BlockBreakEvent event) {
+    public void onBlockBreak(BlockBreakEvent event) {
         if(event.isCancelled()) {
             return;
         }
-		Player players = event.getPlayer();
+        Player players = event.getPlayer();
 
-		if (!plugin.checkAuth(players)) {
-			event.setCancelled(true);
-		}
-	}
-
+        if(!plugin.checkAuth(players)) {
+            event.setCancelled(true);
+        }
+    }
 }

@@ -296,7 +296,7 @@ public class AuthMePlayerListener extends PlayerListener {
         }
 
         //BukkitContrib fix; Those faggots can not code and should be lined up and shot
-        if(event.getMessage().equals("/0.1.3")) {
+        if(event.getMessage().equals("/0.1.3") || event.getMessage().equals("/0.1.6")) {
             return;
         }
 

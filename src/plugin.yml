@@ -1,6 +1,6 @@
 name: AuthMe
 main: de.fgtech.pomo4ka.AuthMe.AuthMe
-version: 0.81
+version: 0.82
 commands:
     login:
         description: With this command a player can login!

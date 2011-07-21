@@ -4,8 +4,6 @@ import java.util.List;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,8 +32,7 @@ import de.fgtech.pomo4ka.AuthMe.Parameters.Messages;
 import de.fgtech.pomo4ka.AuthMe.Parameters.Settings;
 import de.fgtech.pomo4ka.AuthMe.PlayerCache.PlayerCache;
 import de.fgtech.pomo4ka.AuthMe.Sessions.SessionHandler;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
+import de.fgtech.pomo4ka.AuthMe.security.PasswordSecurity;
 
 /**
  * AuthMe for Bukkit
@@ -50,6 +47,7 @@ public class AuthMe extends JavaPlugin {
             this);
     private final AuthMeEntityListener entityListener = new AuthMeEntityListener(
             this);
+    private PasswordSecurity pws;
     public Settings settings;
     public Messages messages;
     public PlayerCache playercache;
@@ -86,6 +84,9 @@ public class AuthMe extends JavaPlugin {
 
         // Create the cache that's needed for inventory backups
         invcache = new FlatfileCache();
+
+        // Create password hasher
+        pws = new PasswordSecurity();
 
         // Create a session handler, that manages player sessions
         int maxTimePeriod = settings.MaximalTimePeriod();
@@ -262,13 +263,17 @@ public class AuthMe extends JavaPlugin {
             boolean executed;
             if(settings.Hash().equals("MD5")) {
                 executed = datacontroller.saveAuth(player.getName(),
-                        digestToMD5(password),
+                        pws.getMD5(password),
                         customInformation);
             } else if(settings.Hash().equals("SHA256")) {
                 String salt = Long.toHexString(Double.doubleToLongBits(Math.
                         random()));
                 executed = datacontroller.saveAuth(player.getName(),
-                        secureCrypt(password, salt),
+                        pws.getSaltedHash(password, salt),
+                        customInformation);
+            } else if(settings.Hash().equals("SHA1")) {
+                executed = datacontroller.saveAuth(player.getName(),
+                        pws.getSHA1(password),
                         customInformation);
             } else {
                 executed = false;
@@ -379,8 +384,7 @@ public class AuthMe extends JavaPlugin {
 
             String salt = Long.toHexString(
                     Double.doubleToLongBits(Math.random()));
-            boolean executed = datacontroller.updateAuth(player.getName(),
-                    secureCrypt(args[1], salt));
+            boolean executed = datacontroller.updateAuth(player.getName(),pws.getSaltedHash(args[1], salt));
 
             if(!executed) {
                 player.sendMessage(messages.getMessage("Error.DatasourceError"));
@@ -669,49 +673,26 @@ public class AuthMe extends JavaPlugin {
     }
 
     private boolean comparePassword(String password, String hash) {
+        //MD5
+        if(hash.length() == 32) {
+            return hash.equals(pws.getMD5(password));
+        }
+
+        //SHA1
+        if(hash.length() == 40) {
+            return hash.equals(pws.getSHA1(password));
+        }
+
+        //SHA256 with salt
         if(hash.contains("$")) {
             String[] data = hash.split("\\$");
             if(data.length > 3 && data[1].equals("SHA")) {
-                return hash.equals(secureCrypt(password, data[2]));
+                return hash.equals(pws.getSaltedHash(password, data[2]));
             } else {
                 return false;
             }
-        } else {
-            return hash.equals(digestToMD5(password));
         }
-    }
-
-    private String secureCrypt(String password, String salt) {
-        return "$SHA$" + salt + "$" + digestToSHA256(digestToSHA256(password)
-                                                     + salt);
-    }
-
-    private String digestToSHA256(String message) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.reset();
-            md.update(message.getBytes("UTF-8"));
-            byte[] digest = md.digest();
-            BigInteger i = new BigInteger(1, digest);
-            return String.format("%0" + (digest.length << 1) + "x", i);
-        } catch(UnsupportedEncodingException ex) {
-        } catch(NoSuchAlgorithmException ex) {
-        }
-        return "";
-    }
-
-    public String digestToMD5(String string) {
-        try {
-            final MessageDigest m = MessageDigest.getInstance("MD5");
-            final byte[] bytes = string.getBytes();
-            m.update(bytes, 0, bytes.length);
-            final BigInteger i = new BigInteger(1, m.digest());
-
-            return String.format("%1$032X", i).toLowerCase();
-        } catch(final Exception e) {
-        }
-
-        return "";
+        return false;
     }
 
     public void extractDefaultFile(String name) {

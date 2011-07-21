@@ -62,30 +62,4 @@ public class PlayerCache {
     public boolean isPlayerAuthenticated(Player player) {
         return isPlayerInCache(player) ? getPlayerData(player).isAuthenticated() : false;
     }
-
-    public long getLastAlert(Player player) {
-        return getPlayerData(player).getLastAlert();
-    }
-
-    public void setLastAlertToNow(Player player) {
-        getPlayerData(player).setLastAlertToNow();
-    }
-
-    public boolean isAlertNeeded(Player player, int intervall) {
-
-        long lastAlert = 0;
-        try {
-            lastAlert = getLastAlert(player);
-        } catch(NullPointerException e) {
-            return false;
-        }
-
-        long timeDiff = System.currentTimeMillis() - lastAlert;
-
-        if(lastAlert == 0 || timeDiff > (intervall * 1000)) {
-            setLastAlertToNow(player);
-            return true;
-        }
-        return false;
-    }
 }

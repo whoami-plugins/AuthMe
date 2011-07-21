@@ -1,9 +1,6 @@
 package de.fgtech.pomo4ka.AuthMe;
 
-import java.util.List;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,16 +14,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.fgtech.pomo4ka.AuthMe.DataController.DataController;
-import de.fgtech.pomo4ka.AuthMe.DataController.DataSource.DataSource;
-import de.fgtech.pomo4ka.AuthMe.DataController.DataSource.FlatfileData;
-import de.fgtech.pomo4ka.AuthMe.DataController.DataSource.MySQLData;
+import de.fgtech.pomo4ka.AuthMe.DataSource.DataSource;
+import de.fgtech.pomo4ka.AuthMe.DataSource.DataCache;
+import de.fgtech.pomo4ka.AuthMe.DataSource.FlatfileData;
+import de.fgtech.pomo4ka.AuthMe.DataSource.MySQLData;
 import de.fgtech.pomo4ka.AuthMe.InventoryCache.FlatfileCache;
 import de.fgtech.pomo4ka.AuthMe.InventoryCache.InventoryArmour;
 import de.fgtech.pomo4ka.AuthMe.Listener.AuthMeBlockListener;
 import de.fgtech.pomo4ka.AuthMe.Listener.AuthMeEntityListener;
 import de.fgtech.pomo4ka.AuthMe.Listener.AuthMePlayerListener;
-import de.fgtech.pomo4ka.AuthMe.LoginTimeout.LoginTimeout;
+import de.fgtech.pomo4ka.AuthMe.LoginTimeout.LoginTimer;
 import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
 import de.fgtech.pomo4ka.AuthMe.Parameters.Messages;
 import de.fgtech.pomo4ka.AuthMe.Parameters.Settings;
@@ -34,11 +31,6 @@ import de.fgtech.pomo4ka.AuthMe.PlayerCache.PlayerCache;
 import de.fgtech.pomo4ka.AuthMe.Sessions.SessionHandler;
 import de.fgtech.pomo4ka.AuthMe.security.PasswordSecurity;
 
-/**
- * AuthMe for Bukkit
- *
- * @author pomo4ka
- */
 public class AuthMe extends JavaPlugin {
 
     private final AuthMePlayerListener playerListener = new AuthMePlayerListener(
@@ -48,13 +40,12 @@ public class AuthMe extends JavaPlugin {
     private final AuthMeEntityListener entityListener = new AuthMeEntityListener(
             this);
     private PasswordSecurity pws;
-    public Settings settings;
-    public Messages messages;
-    public PlayerCache playercache;
-    public DataController datacontroller;
-    public FlatfileCache invcache;
-    public SessionHandler sessionhandler;
-    public DataSource datas;
+    private Settings settings;
+    private Messages messages;
+    private PlayerCache playercache;
+    private FlatfileCache invcache;
+    private SessionHandler sessionhandler;
+    private DataSource data;
 
     @Override
     public void onEnable() {
@@ -66,10 +57,6 @@ public class AuthMe extends JavaPlugin {
 
         // Loading config
         File configFile = new File(Settings.PLUGIN_FOLDER, "config.yml");
-        if(!configFile.exists()) {
-            extractDefaultFile("config.yml");
-            configFile = new File(Settings.PLUGIN_FOLDER, "config.yml");
-        }
         settings = new Settings(configFile);
 
         // Loading messages
@@ -93,49 +80,25 @@ public class AuthMe extends JavaPlugin {
         boolean IPCheck = settings.SessionIPCheckEnabled();
         sessionhandler = new SessionHandler(maxTimePeriod, IPCheck);
 
-        // Save the current time to use it later
-        long before = System.currentTimeMillis();
-
         // Create the wished DataSource
         if(settings.DataSource().equals("mysql")) {
             MessageHandler.showInfo("Using MySQL as datasource!");
-
-            String host = settings.MySQLConnectionHost();
-            int port = settings.MySQLConnectionPort();
-            String database = settings.MySQLConnectionDatabase();
-            String username = settings.MySQLConnectionUsername();
-            String password = settings.MySQLConnectionPassword();
-            String tableName = settings.MySQLCustomTableName();
-            String columnName = settings.MySQLCustomColumnName();
-            String columnPassword = settings.MySQLCustomColumnPassword();
-            datas = new MySQLData(host, port, database, username, password,
-                    tableName, columnName, columnPassword);
+            data = new DataCache(new MySQLData(settings), settings.
+                    CachingEnabled());
         } else {
             MessageHandler.showInfo("Using flatfile as datasource!");
-
-            datas = new FlatfileData();
+            data = new DataCache(new FlatfileData(), settings.CachingEnabled());
         }
-
-        // Setting up the DataController
-        boolean caching = settings.CachingEnabled();
-        datacontroller = new DataController(datas, caching);
 
         // Outputs the time that was needed for loading the registrations
-        float timeDiff = (float) (System.currentTimeMillis() - before);
-        timeDiff = timeDiff / 1000;
 
-        if(caching) {
+        if(settings.CachingEnabled()) {
             MessageHandler.showInfo("Cache for registrations is enabled!");
-            MessageHandler.showInfo(datacontroller.getRegisteredPlayerAmount()
-                                    + " registered players loaded in "
-                                    + timeDiff
-                                    + " seconds!");
-        } else {
-            MessageHandler.showInfo("Cache for registrations is disabled!");
-            MessageHandler.showInfo("There are "
-                                    + datacontroller.getRegisteredPlayerAmount()
-                                    + " registered players in database!");
         }
+
+        MessageHandler.showInfo("There are " + data.getRegisteredPlayerAmount()
+                                + " registered players in database!");
+
 
         MessageHandler.showInfo("Version " + this.getDescription().getVersion()
                                 + " is enabled!");
@@ -179,7 +142,7 @@ public class AuthMe extends JavaPlugin {
     public void onAuthMeReload() {
         for(Player player : getServer().getOnlinePlayers()) {
             // Is player really registered?
-            boolean regged = datacontroller.isPlayerRegistered(player.getName());
+            boolean regged = data.isPlayerRegistered(player.getName());
 
             // Create PlayerCache
             playercache.createCache(player, regged, false);
@@ -262,17 +225,17 @@ public class AuthMe extends JavaPlugin {
 
             boolean executed;
             if(settings.Hash().equals("MD5")) {
-                executed = datacontroller.saveAuth(player.getName(),
+                executed = data.saveAuth(player.getName(),
                         pws.getMD5(password),
                         customInformation);
             } else if(settings.Hash().equals("SHA256")) {
                 String salt = Long.toHexString(Double.doubleToLongBits(Math.
                         random()));
-                executed = datacontroller.saveAuth(player.getName(),
+                executed = data.saveAuth(player.getName(),
                         pws.getSaltedHash(password, salt),
                         customInformation);
             } else if(settings.Hash().equals("SHA1")) {
-                executed = datacontroller.saveAuth(player.getName(),
+                executed = data.saveAuth(player.getName(),
                         pws.getSHA1(password),
                         customInformation);
             } else {
@@ -327,7 +290,7 @@ public class AuthMe extends JavaPlugin {
                 return false;
             }
 
-            final String realPassword = datacontroller.getHash(playername);
+            final String realPassword = data.loadHash(playername);
 
             if(!comparePassword(password, realPassword)) {
                 if(settings.KickOnWrongPassword()) {
@@ -343,7 +306,7 @@ public class AuthMe extends JavaPlugin {
                 return false;
             }
 
-            LoginTimeout.removeLoginTimeout(this, player);
+            LoginTimer.unscheduleLoginTimer(this, player);
             performPlayerLogin(player);
 
             player.sendMessage(messages.getMessage("Command.LoginResponse"));
@@ -377,14 +340,15 @@ public class AuthMe extends JavaPlugin {
                 return false;
             }
             if(!comparePassword(args[0],
-                    datacontroller.getHash(player.getName()))) {
+                    data.loadHash(player.getName()))) {
                 player.sendMessage(messages.getMessage("Error.WrongPassword"));
                 return false;
             }
 
             String salt = Long.toHexString(
                     Double.doubleToLongBits(Math.random()));
-            boolean executed = datacontroller.updateAuth(player.getName(),pws.getSaltedHash(args[1], salt));
+            boolean executed = data.updateAuth(player.getName(), pws.
+                    getSaltedHash(args[1], salt));
 
             if(!executed) {
                 player.sendMessage(messages.getMessage("Error.DatasourceError"));
@@ -445,12 +409,12 @@ public class AuthMe extends JavaPlugin {
                 return false;
             }
             if(!comparePassword(args[0],
-                    datacontroller.getHash(player.getName()))) {
+                    data.loadHash(player.getName()))) {
                 player.sendMessage(messages.getMessage("Error.WrongPassword"));
                 return false;
             }
 
-            boolean executed = datacontroller.removeAuth(player.getName());
+            boolean executed = data.removeAuth(player.getName());
 
             if(!executed) {
                 player.sendMessage(messages.getMessage("Error.DatasourceError"));
@@ -515,7 +479,7 @@ public class AuthMe extends JavaPlugin {
                     return false;
                 }
 
-                datacontroller = new DataController(datas, true);
+                data.loadAllAuths();
 
                 sender.sendMessage(
                         ChatColor.GREEN
@@ -528,10 +492,6 @@ public class AuthMe extends JavaPlugin {
             // /authme reload config Command
             if(args[0].equals("reloadconfig")) {
                 File configFile = new File(Settings.PLUGIN_FOLDER, "config.yml");
-                if(!configFile.exists()) {
-                    extractDefaultFile("config.yml");
-                    configFile = new File(Settings.PLUGIN_FOLDER, "config.yml");
-                }
                 settings = new Settings(configFile);
 
                 sender.sendMessage(
@@ -564,13 +524,13 @@ public class AuthMe extends JavaPlugin {
                             "Reseting a authentication is currently disabled!");
                     return false;
                 }
-                if(!datacontroller.isPlayerRegistered(args[1])) {
+                if(!data.isPlayerRegistered(args[1])) {
                     sender.sendMessage(messages.getMessage(
                             "Error.PlayerNotRegistered"));
                     return false;
                 }
 
-                boolean executed = datacontroller.removeAuth(args[1]);
+                boolean executed = data.removeAuth(args[1]);
 
                 if(!executed) {
                     sender.sendMessage(messages.getMessage(
@@ -598,42 +558,10 @@ public class AuthMe extends JavaPlugin {
     }
 
     public boolean checkAuth(Player player) {
-
         if(playercache.isPlayerAuthenticated(player)) {
             return true;
         }
-
-        int alertInterval = settings.alertInterval();
-        if(playercache.isPlayerRegistered(player)) {
-            if(playercache.isAlertNeeded(player, alertInterval)) {
-                player.sendMessage(messages.getMessage("Alert.Login"));
-            }
-            return false;
-        }
-
-        if(settings.ForceRegistration()) {
-            if(playercache.isAlertNeeded(player, alertInterval)) {
-                player.sendMessage(messages.getMessage("Alert.Registration"));
-            }
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    // Checks if the player doesn't have to log in to do stuff(Bots?)
-    public boolean checkUnrestrictedAccess(Player player) {
-        List<Object> players = settings.AllowPlayerUnrestrictedAccess();
-        if(!players.isEmpty()) {
-            for(Object playernameObj : players) {
-                String playername = (String) playernameObj;
-                if(player.getName().equalsIgnoreCase(playername)
-                   || player.getDisplayName().equalsIgnoreCase(playername)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return !settings.ForceRegistration();
     }
 
     public void performPlayerLogin(Player player) {
@@ -685,9 +613,9 @@ public class AuthMe extends JavaPlugin {
 
         //SHA256 with salt
         if(hash.contains("$")) {
-            String[] data = hash.split("\\$");
-            if(data.length > 3 && data[1].equals("SHA")) {
-                return hash.equals(pws.getSaltedHash(password, data[2]));
+            String[] line = hash.split("\\$");
+            if(line.length > 3 && line[1].equals("SHA")) {
+                return hash.equals(pws.getSaltedHash(password, line[2]));
             } else {
                 return false;
             }
@@ -695,43 +623,31 @@ public class AuthMe extends JavaPlugin {
         return false;
     }
 
-    public void extractDefaultFile(String name) {
-        File actual = new File(Settings.PLUGIN_FOLDER, name);
-        if(!actual.exists()) {
+    public DataSource getData() {
+        return data;
+    }
 
-            InputStream input = this.getClass().getResourceAsStream(
-                    "/" + name);
-            if(input != null) {
-                FileOutputStream output = null;
+    public FlatfileCache getInvcache() {
+        return invcache;
+    }
 
-                try {
-                    output = new FileOutputStream(actual);
-                    byte[] buf = new byte[8192];
-                    int length = 0;
+    public Messages getMessages() {
+        return messages;
+    }
 
-                    while((length = input.read(buf)) > 0) {
-                        output.write(buf, 0, length);
-                    }
+    public AuthMePlayerListener getPlayerListener() {
+        return playerListener;
+    }
 
-                    MessageHandler.showInfo("Default file written: " + name);
-                } catch(Exception e) {
-                    MessageHandler.showStackTrace(e);
-                } finally {
-                    try {
-                        if(input != null) {
-                            input.close();
-                        }
-                    } catch(Exception e) {
-                    }
+    public PlayerCache getPlayercache() {
+        return playercache;
+    }
 
-                    try {
-                        if(output != null) {
-                            output.close();
-                        }
-                    } catch(Exception e) {
-                    }
-                }
-            }
-        }
+    public SessionHandler getSessionhandler() {
+        return sessionhandler;
+    }
+
+    public Settings getSettings() {
+        return settings;
     }
 }

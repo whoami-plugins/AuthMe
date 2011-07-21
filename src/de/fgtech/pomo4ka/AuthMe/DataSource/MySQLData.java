@@ -1,6 +1,7 @@
-package de.fgtech.pomo4ka.AuthMe.DataController.DataSource;
+package de.fgtech.pomo4ka.AuthMe.DataSource;
 
 import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
+import de.fgtech.pomo4ka.AuthMe.Parameters.Settings;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,7 +11,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MySQLData extends DataSource {
+public class MySQLData implements DataSource {
 
     private Connection connection = null;
     private Statement statement = null;
@@ -24,6 +25,20 @@ public class MySQLData extends DataSource {
     private String tableName;
     private String columnName;
     private String columnPassword;
+
+    public MySQLData(Settings settings) {
+        this.host = settings.MySQLConnectionHost();
+        this.port = settings.MySQLConnectionPort();
+        this.database = settings.MySQLConnectionDatabase();
+        this.username = settings.MySQLConnectionUsername();
+        this.password = settings.MySQLConnectionPassword();
+        this.tableName = settings.MySQLCustomTableName();
+        this.columnName = settings.MySQLCustomColumnName();
+        this.columnPassword = settings.MySQLCustomColumnPassword();
+
+        connect();
+        setup();
+    }
 
     public MySQLData(String host, int port, String database, String username,
             String password, String tableName, String columnName,

@@ -1,4 +1,4 @@
-package de.fgtech.pomo4ka.AuthMe.DataController.DataSource;
+package de.fgtech.pomo4ka.AuthMe.DataSource;
 
 import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
 import java.io.BufferedReader;
@@ -14,7 +14,7 @@ import java.util.Scanner;
 import de.fgtech.pomo4ka.AuthMe.Parameters.Settings;
 import java.util.HashMap;
 
-public class FlatfileData extends DataSource {
+public class FlatfileData implements DataSource {
 
     public FlatfileData() {
         String authFolder = Settings.AUTH_FILE.substring(0,

@@ -1,6 +1,9 @@
 package de.fgtech.pomo4ka.AuthMe.Parameters;
 
+import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +23,7 @@ public class Settings extends Configuration {
             load();
             updateFile();
         } else {
-            writeFile();
+            writeDefaultFile();
         }
     }
 
@@ -65,6 +68,39 @@ public class Settings extends Configuration {
         DataSource();
 
         this.save();
+    }
+
+    public final void writeDefaultFile() {
+        File actual = new File(Settings.PLUGIN_FOLDER, "config.yml");
+        if(!actual.exists()) {
+
+            InputStream input = this.getClass().getResourceAsStream("/config.yml");
+            if(input != null) {
+                FileOutputStream output = null;
+                try {
+                    output = new FileOutputStream(actual);
+                    byte[] buf = new byte[8192];
+                    int length = 0;
+
+                    while((length = input.read(buf)) > 0) {
+                        output.write(buf, 0, length);
+                    }
+
+                    MessageHandler.showInfo("Default file written: config.yml");
+                } catch(Exception e) {
+                    MessageHandler.showStackTrace(e);
+                } finally {
+                    try {
+                        input.close();
+                    } catch(Exception e) {
+                    }
+                    try {
+                        output.close();
+                    } catch(Exception e) {
+                    }
+                }
+            }
+        }
     }
 
     private void updateFile() {

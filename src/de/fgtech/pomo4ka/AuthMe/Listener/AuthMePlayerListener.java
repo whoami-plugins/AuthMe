@@ -9,10 +9,9 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.*;
 
-
 import de.fgtech.pomo4ka.AuthMe.AuthMe;
 import de.fgtech.pomo4ka.AuthMe.InventoryCache.InventoryArmour;
-import de.fgtech.pomo4ka.AuthMe.LoginTimeout.LoginTimeout;
+import de.fgtech.pomo4ka.AuthMe.LoginTimeout.LoginTimer;
 import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
 
 /**
@@ -22,7 +21,7 @@ import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
  */
 public class AuthMePlayerListener extends PlayerListener {
 
-    private final AuthMe plugin;
+    private AuthMe plugin;
 
     // private long lastMove;
     public AuthMePlayerListener(AuthMe instance) {
@@ -38,26 +37,26 @@ public class AuthMePlayerListener extends PlayerListener {
         String playername = player.getName();
 
         // Kicks non registered player before they could join
-        if(plugin.settings.KickNonRegistered()) {
-            if(!plugin.datacontroller.isPlayerRegistered(playername)) {
+        if(plugin.getSettings().KickNonRegistered()) {
+            if(!plugin.getData().isPlayerRegistered(playername)) {
                 event.disallow(Result.KICK_OTHER,
-                        plugin.messages.getMessage("Kick.NotRegistered"));
+                        plugin.getMessages().getMessage("Kick.NotRegistered"));
             }
         }
 
         // If there is another player logged in with the same name, disallow
         // connection
-        if(plugin.playercache.isPlayerAuthenticated(player)) {
+        if(plugin.getPlayercache().isPlayerAuthenticated(player)) {
             event.disallow(Result.KICK_OTHER,
-                    plugin.messages.getMessage("Kick.OtherUserLoggedIn"));
+                    plugin.getMessages().getMessage("Kick.OtherUserLoggedIn"));
         }
 
         // If the player contains invalid characters, disallow connection
-        if((!playername.matches(plugin.settings.PlayerNameRegex()))
-           || (playername.length() > plugin.settings.PlayerNameMaxLength())
-           || (playername.length() < plugin.settings.PlayerNameMinLength())
+        if((!playername.matches(plugin.getSettings().PlayerNameRegex()))
+           || (playername.length() > plugin.getSettings().PlayerNameMaxLength())
+           || (playername.length() < plugin.getSettings().PlayerNameMinLength())
            || (playername.equalsIgnoreCase("Player"))) {
-            event.disallow(Result.KICK_OTHER, plugin.messages.getMessage(
+            event.disallow(Result.KICK_OTHER, plugin.getMessages().getMessage(
                     "Kick.DisallowedCharacters", playername));
         }
     }
@@ -71,7 +70,7 @@ public class AuthMePlayerListener extends PlayerListener {
 
         // Just prevent kicks, if the player get this message and is logged in
         if(event.getReason().equals("Logged in from another location.")) {
-            if(plugin.playercache.isPlayerAuthenticated(player)) {
+            if(plugin.getPlayercache().isPlayerAuthenticated(player)) {
                 event.setCancelled(true);
             }
         }
@@ -85,29 +84,30 @@ public class AuthMePlayerListener extends PlayerListener {
         Player player = event.getPlayer();
 
         // Is player really registered?
-        boolean regged = plugin.datacontroller.isPlayerRegistered(
+        boolean regged = plugin.getData().isPlayerRegistered(
                 player.getName());
 
         // Create PlayerCache
-        plugin.playercache.createCache(player, regged, false);
+        plugin.getPlayercache().createCache(player, regged, false);
 
         // Check if the player has unrestricted access due a config setting
-        if(plugin.checkUnrestrictedAccess(player)) {
-            plugin.playercache.setPlayerAuthenticated(player, true);
+        List<Object> l = plugin.getSettings().AllowPlayerUnrestrictedAccess();
+        if(l.contains(player.getName()) || l.contains(player.getDisplayName())) {
+            plugin.getPlayercache().setPlayerAuthenticated(player, true);
         }
 
         // Inform the player for the need or possibility of registration
-        if(!plugin.playercache.isPlayerRegistered(player)) {
-            if(plugin.settings.ForceRegistration()) {
-                player.sendMessage(plugin.messages.getMessage(
+        if(!plugin.getPlayercache().isPlayerRegistered(player)) {
+            if(plugin.getSettings().ForceRegistration()) {
+                player.sendMessage(plugin.getMessages().getMessage(
                         "JoinMessage.ForceRegistration"));
-                player.sendMessage(plugin.messages.getMessage(
+                player.sendMessage(plugin.getMessages().getMessage(
                         "JoinMessage.Command"));
                 return;
             } else {
-                player.sendMessage(plugin.messages.getMessage(
+                player.sendMessage(plugin.getMessages().getMessage(
                         "JoinMessage.FreeRegistration"));
-                player.sendMessage(plugin.messages.getMessage(
+                player.sendMessage(plugin.getMessages().getMessage(
                         "JoinMessage.Command"));
                 return;
             }
@@ -116,12 +116,12 @@ public class AuthMePlayerListener extends PlayerListener {
         // --The following section is only executed for registered players!--
 
         // Session Login
-        if(plugin.settings.LoginSessionsEnabled()) {
+        if(plugin.getSettings().LoginSessionsEnabled()) {
 
-            if(plugin.sessionhandler.isSessionValid(player)) {
+            if(plugin.getSessionhandler().isSessionValid(player)) {
                 // perform session login
                 plugin.performPlayerLogin(player);
-                player.sendMessage(plugin.messages.getMessage("Sessions.Hint"));
+                player.sendMessage(plugin.getMessages().getMessage("Sessions.Hint"));
                 MessageHandler.showInfo(
                         "Player " + player.getName()
                         + " was automatically logged in by session.");
@@ -131,18 +131,18 @@ public class AuthMePlayerListener extends PlayerListener {
         }
 
         // Make a backup of an inventory if it doesn't exist
-        if(!plugin.invcache.doesCacheExist(player.getName())) {
+        if(!plugin.getInvcache().doesCacheExist(player.getName())) {
             ItemStack[] inv = player.getInventory().getContents();
             ItemStack[] arm = player.getInventory().getArmorContents();
             InventoryArmour invarm = new InventoryArmour(inv, arm);
 
-            plugin.invcache.createCache(player.getName(), invarm);
+            plugin.getInvcache().createCache(player.getName(), invarm);
         }
 
         // if the player is dead, delete all possible inventory backups and
         // teleport him to spawn
         if(player.getHealth() <= 0) {
-            plugin.invcache.removeCache(player.getName());
+            plugin.getInvcache().removeCache(player.getName());
 
             Location spawn = player.getWorld().getSpawnLocation();
 
@@ -155,10 +155,10 @@ public class AuthMePlayerListener extends PlayerListener {
         player.getInventory().setLeggings(null);
         player.getInventory().setBoots(null);
 
-        // Create LoginTimeout Timer
-        LoginTimeout.createLoginTimeout(plugin, player);
+        // Create LoginTimer Timer
+        LoginTimer.scheduleLoginTimer(plugin, player);
 
-        player.sendMessage(plugin.messages.getMessage("Alert.Login"));
+        player.sendMessage(plugin.getMessages().getMessage("Alert.Login"));
     }
 
     @Override
@@ -180,17 +180,17 @@ public class AuthMePlayerListener extends PlayerListener {
          */
 
         // Set new session
-        if(plugin.settings.LoginSessionsEnabled()) {
-            if(plugin.playercache.isPlayerAuthenticated(player)) {
-                plugin.sessionhandler.createSession(player);
+        if(plugin.getSettings().LoginSessionsEnabled()) {
+            if(plugin.getPlayercache().isPlayerAuthenticated(player)) {
+                plugin.getSessionhandler().createSession(player);
             }
         }
 
         // Remove PlayerCache
-        plugin.playercache.removeCache(player);
+        plugin.getPlayercache().removeCache(player);
 
-        // Remove LoginTimeout Timer
-        LoginTimeout.removeLoginTimeout(plugin, player);
+        // Remove LoginTimer Timer
+        LoginTimer.unscheduleLoginTimer(plugin, player);
     }
 
     @Override
@@ -199,21 +199,13 @@ public class AuthMePlayerListener extends PlayerListener {
             return;
         }
         Player player = event.getPlayer();
-
-        // Disables continuous falling down
-        Location fromLoc = event.getFrom();
-        Location toLoc = event.getTo();
-
-        if(fromLoc.getX() == toLoc.getX() && fromLoc.getZ() == toLoc.getZ()) {
-            if(fromLoc.getY() > toLoc.getY()) {
-                return;
-            }
+        if(!plugin.checkAuth(player)) {
+            event.setCancelled(true);
         }
 
         if(!plugin.checkAuth(player)) {
-
-            if(plugin.settings.WalkAroundSpawnEnabled()) {
-                if(!plugin.playercache.isPlayerRegistered(player)) {
+            if(plugin.getSettings().WalkAroundSpawnEnabled()) {
+                if(!plugin.getPlayercache().isPlayerRegistered(player)) {
                     Location spawn = player.getWorld().getSpawnLocation();
 
                     int xDiff = spawn.getBlockX()
@@ -223,7 +215,7 @@ public class AuthMePlayerListener extends PlayerListener {
                                 - player.getLocation().getBlockZ();
                     zDiff = Math.abs(zDiff);
 
-                    int maxRadius = plugin.settings.WalkAroundSpawnRadius();
+                    int maxRadius = plugin.getSettings().WalkAroundSpawnRadius();
 
                     if(xDiff <= maxRadius && zDiff <= maxRadius) {
                         // allow walk
@@ -237,15 +229,13 @@ public class AuthMePlayerListener extends PlayerListener {
                             // teleport to old location
                             newLoc = event.getFrom();
                         }
-                        player.teleport(newLoc.clone());
+                        player.teleport(newLoc);
                         event.setCancelled(true);
                     }
                     return;
                 }
             }
-
             event.setCancelled(true);
-            player.teleport(fromLoc);
         }
     }
 
@@ -256,8 +246,8 @@ public class AuthMePlayerListener extends PlayerListener {
         }
         Player player = event.getPlayer();
 
-        if(plugin.settings.AllowUnregisteredChat()) {
-            if(!plugin.playercache.isPlayerRegistered(player)) {
+        if(plugin.getSettings().AllowUnregisteredChat()) {
+            if(!plugin.getPlayercache().isPlayerRegistered(player)) {
                 return;
             }
         }
@@ -273,7 +263,6 @@ public class AuthMePlayerListener extends PlayerListener {
         if(event.isCancelled() || event.getPlayer() == null) {
             return;
         }
-
         Player player = event.getPlayer();
         String commandLabel = event.getMessage().split(" ")[0];
 
@@ -302,13 +291,13 @@ public class AuthMePlayerListener extends PlayerListener {
 
         // Enable commands specified per config
         List<Object> cmdList = new ArrayList<Object>();
-        if(plugin.playercache.isPlayerRegistered(player)) {
-            if(!plugin.settings.AllowAllowNonLoggedInCommand().isEmpty()) {
-                cmdList = plugin.settings.AllowAllowNonLoggedInCommand();
+        if(plugin.getPlayercache().isPlayerRegistered(player)) {
+            if(!plugin.getSettings().AllowAllowNonLoggedInCommand().isEmpty()) {
+                cmdList = plugin.getSettings().AllowAllowNonLoggedInCommand();
             }
         } else {
-            if(!plugin.settings.AllowAllowNonRegisteredCommand().isEmpty()) {
-                cmdList = plugin.settings.AllowAllowNonRegisteredCommand();
+            if(!plugin.getSettings().AllowAllowNonRegisteredCommand().isEmpty()) {
+                cmdList = plugin.getSettings().AllowAllowNonRegisteredCommand();
             }
         }
         if(!cmdList.isEmpty()) {

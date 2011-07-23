@@ -199,9 +199,6 @@ public class AuthMePlayerListener extends PlayerListener {
             return;
         }
         Player player = event.getPlayer();
-        if(!plugin.checkAuth(player)) {
-            event.setCancelled(true);
-        }
 
         if(!plugin.checkAuth(player)) {
             if(plugin.getSettings().WalkAroundSpawnEnabled()) {

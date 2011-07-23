@@ -92,5 +92,4 @@ public class DataCache implements DataSource {
             return source.getRegisteredPlayerAmount();
         }
     }
-
 }

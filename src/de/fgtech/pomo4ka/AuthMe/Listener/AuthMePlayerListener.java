@@ -46,9 +46,12 @@ public class AuthMePlayerListener extends PlayerListener {
 
         // If there is another player logged in with the same name, disallow
         // connection
-        if(plugin.getPlayercache().isPlayerAuthenticated(player)) {
-            event.disallow(Result.KICK_OTHER,
+        Player p2 = plugin.getServer().getPlayer(event.getPlayer().getName());
+        if(p2 != null) {
+            if(plugin.getPlayercache().isPlayerAuthenticated(p2)) {
+                event.disallow(Result.KICK_OTHER,
                     plugin.getMessages().getMessage("Kick.OtherUserLoggedIn"));
+            }
         }
 
         // If the player contains invalid characters, disallow connection

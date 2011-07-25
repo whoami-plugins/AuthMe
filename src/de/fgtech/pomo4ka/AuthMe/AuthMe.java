@@ -52,7 +52,7 @@ public class AuthMe extends JavaPlugin {
     public void onEnable() {
         // Creating dir, if it doesn't exist
         final File folder = new File(Settings.PLUGIN_FOLDER);
-        if (!folder.exists()) {
+        if(!folder.exists()) {
             folder.mkdirs();
         }
 
@@ -62,15 +62,15 @@ public class AuthMe extends JavaPlugin {
 
         // Loading messages
         String lang = settings.Language().toLowerCase();
-        if (lang.equals("en")) {
+        if(lang.equals("en")) {
             File messagesFile = new File(Settings.PLUGIN_FOLDER, "messages.yml");
-            if (!messagesFile.exists()) {
+            if(!messagesFile.exists()) {
                 messagesFile = new File(Settings.PLUGIN_FOLDER, "messages.yml");
             }
             messages = new Messages(messagesFile);
         } else {
             String filename = "messages_" + lang + ".yml";
-            messages = new Messages(Utility.loadFileFromJar(filename),false);
+            messages = new Messages(Utility.loadFileFromJar(filename), false);
         }
 
         // Create a new cache for player stuff
@@ -88,9 +88,10 @@ public class AuthMe extends JavaPlugin {
         sessionhandler = new SessionHandler(maxTimePeriod, IPCheck);
 
         // Create the wished DataSource
-        if (settings.DataSource().equals("mysql")) {
+        if(settings.DataSource().equals("mysql")) {
             MessageHandler.showInfo("Using MySQL as datasource!");
-            data = new DataCache(new MySQLData(settings), settings.CachingEnabled());
+            data = new DataCache(new MySQLData(settings), settings.
+                    CachingEnabled());
         } else {
             MessageHandler.showInfo("Using flatfile as datasource!");
             data = new DataCache(new FlatfileData(), settings.CachingEnabled());
@@ -98,19 +99,19 @@ public class AuthMe extends JavaPlugin {
 
         // Outputs the time that was needed for loading the registrations
 
-        if (settings.CachingEnabled()) {
+        if(settings.CachingEnabled()) {
             MessageHandler.showInfo("Cache for registrations is enabled!");
         }
 
         MessageHandler.showInfo("There are " + data.getRegisteredPlayerAmount()
-                + " registered players in database!");
+                                + " registered players in database!");
 
 
         MessageHandler.showInfo("Version " + this.getDescription().getVersion()
-                + " is enabled!");
+                                + " is enabled!");
 
         // Check if the plugin was loaded under runtime or was reloaded
-        if (getServer().getOnlinePlayers().length > 0) {
+        if(getServer().getOnlinePlayers().length > 0) {
             onAuthMeReload();
         }
 
@@ -146,7 +147,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     public void onAuthMeReload() {
-        for (Player player : getServer().getOnlinePlayers()) {
+        for(Player player : getServer().getOnlinePlayers()) {
             // Is player really registered?
             boolean regged = data.isPlayerRegistered(player.getName());
 
@@ -161,55 +162,56 @@ public class AuthMe extends JavaPlugin {
     @Override
     public void onDisable() {
         MessageHandler.showInfo("Version " + this.getDescription().getVersion()
-                + " is disabled!");
+                                + " is disabled!");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
 
-        if (commandLabel.equalsIgnoreCase("register")) {
-            if (!(sender instanceof Player)) {
+        if(commandLabel.equalsIgnoreCase("register")) {
+            if(!(sender instanceof Player)) {
                 return false;
             }
 
             Player player = (Player) sender;
 
-            if (!settings.RegisterEnabled()) {
+            if(!settings.RegisterEnabled()) {
                 player.sendMessage("Registrations are currently disabled!");
                 return false;
             }
 
-            if (playercache.isPlayerRegistered(player)) {
+            if(playercache.isPlayerRegistered(player)) {
                 player.sendMessage(
                         messages.getMessage("Error.AlreadyRegistered"));
                 return false;
             }
 
-            Map<String, String> customFields = settings.getCustomInformationFields();
+            Map<String, String> customFields = settings.
+                    getCustomInformationFields();
             Map<String, String> customInformation = new HashMap<String, String>();
 
             // Do we have custom tables and mysql as datasource?
-            if (customFields.size() > 0
-                    && settings.DataSource().equals("mysql")) {
+            if(customFields.size() > 0
+               && settings.DataSource().equals("mysql")) {
 
                 // Check if the player typed the right amount of fields
-                if (args.length != customFields.size() + 1) {
+                if(args.length != customFields.size() + 1) {
                     String usageCustomFields = "";
-                    for (String key : customFields.keySet()) {
+                    for(String key : customFields.keySet()) {
                         usageCustomFields = usageCustomFields + "<" + key
-                                + "> ";
+                                            + "> ";
                     }
                     player.sendMessage("Usage: /register <password> "
-                            + usageCustomFields);
+                                       + usageCustomFields);
                     return false;
                 }
 
                 // Check the custom fields, if they comply to the RegEx'es and
                 // extract the informations and save them in a hashtable
                 int counter = 1;
-                for (String key : customFields.keySet()) {
-                    if (!args[counter].matches(customFields.get(key))) {
+                for(String key : customFields.keySet()) {
+                    if(!args[counter].matches(customFields.get(key))) {
                         player.sendMessage(messages.getMessage(
                                 "Command.RegisterExtraInfoCheckFailed", key));
                         return false;
@@ -220,7 +222,7 @@ public class AuthMe extends JavaPlugin {
 
             } else {
                 // Check if the player typed the right amount of fields
-                if (args.length != 1) {
+                if(args.length != 1) {
                     player.sendMessage("Usage: /register <password>");
                     return false;
                 }
@@ -229,16 +231,17 @@ public class AuthMe extends JavaPlugin {
             String password = args[0];
 
             boolean executed;
-            if (settings.Hash().equals("MD5")) {
+            if(settings.Hash().equals("MD5")) {
                 executed = data.saveAuth(player.getName(),
                         pws.getMD5(password),
                         customInformation);
-            } else if (settings.Hash().equals("SHA256")) {
-                String salt = Long.toHexString(Double.doubleToLongBits(Math.random()));
+            } else if(settings.Hash().equals("SHA256")) {
+                String salt = Long.toHexString(Double.doubleToLongBits(Math.
+                        random()));
                 executed = data.saveAuth(player.getName(),
                         pws.getSaltedHash(password, salt),
                         customInformation);
-            } else if (settings.Hash().equals("SHA1")) {
+            } else if(settings.Hash().equals("SHA1")) {
                 executed = data.saveAuth(player.getName(),
                         pws.getSHA1(password),
                         customInformation);
@@ -246,7 +249,7 @@ public class AuthMe extends JavaPlugin {
                 executed = false;
             }
 
-            if (!executed) {
+            if(!executed) {
                 player.sendMessage(messages.getMessage("Error.DatasourceError"));
                 MessageHandler.showError(
                         "Failed to save an auth due to an error in the datasource!");
@@ -259,24 +262,24 @@ public class AuthMe extends JavaPlugin {
             player.sendMessage(messages.getMessage("Command.RegisterResponse",
                     password));
             MessageHandler.showInfo("Player " + player.getName()
-                    + " is now registered!");
+                                    + " is now registered!");
 
             return true;
         }
 
-        if (commandLabel.equalsIgnoreCase("login")
-                || commandLabel.equalsIgnoreCase("l")) {
-            if (!(sender instanceof Player)) {
+        if(commandLabel.equalsIgnoreCase("login")
+           || commandLabel.equalsIgnoreCase("l")) {
+            if(!(sender instanceof Player)) {
                 return false;
             }
             Player player = (Player) sender;
 
-            if (!settings.LoginEnabled()) {
+            if(!settings.LoginEnabled()) {
                 player.sendMessage("Logins are currently disabled!");
                 return false;
             }
 
-            if (args.length != 1) {
+            if(args.length != 1) {
                 player.sendMessage("Usage: /login <password>");
                 return false;
             }
@@ -284,20 +287,20 @@ public class AuthMe extends JavaPlugin {
             String playername = player.getName();
             String password = args[0];
 
-            if (!playercache.isPlayerRegistered(player)) {
+            if(!playercache.isPlayerRegistered(player)) {
                 player.sendMessage(messages.getMessage("Error.NotRegistered"));
                 return false;
             }
 
-            if (playercache.isPlayerAuthenticated(player)) {
+            if(playercache.isPlayerAuthenticated(player)) {
                 player.sendMessage(messages.getMessage("Error.AlreadyLoggedIn"));
                 return false;
             }
 
             final String realPassword = data.loadHash(playername);
 
-            if (!comparePassword(password, realPassword)) {
-                if (settings.KickOnWrongPassword()) {
+            if(!comparePassword(password, realPassword)) {
+                if(settings.KickOnWrongPassword()) {
                     player.kickPlayer(messages.getMessage(
                             "Error.InvalidPassword"));
                 } else {
@@ -315,35 +318,35 @@ public class AuthMe extends JavaPlugin {
 
             player.sendMessage(messages.getMessage("Command.LoginResponse"));
             MessageHandler.showInfo("Player " + player.getName()
-                    + " logged in!");
+                                    + " logged in!");
 
             return true;
         }
 
-        if (commandLabel.equalsIgnoreCase("changepassword")) {
-            if (!(sender instanceof Player)) {
+        if(commandLabel.equalsIgnoreCase("changepassword")) {
+            if(!(sender instanceof Player)) {
                 return false;
             }
             Player player = (Player) sender;
 
-            if (!settings.ChangePasswordEnabled()) {
+            if(!settings.ChangePasswordEnabled()) {
                 player.sendMessage("Changing passwords is currently disabled!");
                 return false;
             }
-            if (!playercache.isPlayerRegistered(player)) {
+            if(!playercache.isPlayerRegistered(player)) {
                 player.sendMessage(messages.getMessage("Error.NotRegistered"));
                 return false;
             }
-            if (!playercache.isPlayerAuthenticated(player)) {
+            if(!playercache.isPlayerAuthenticated(player)) {
                 player.sendMessage(messages.getMessage("Error.NotLogged"));
                 return false;
             }
-            if (args.length != 2) {
+            if(args.length != 2) {
                 player.sendMessage(
                         "Usage: /changepassword <oldpassword> <newpassword>");
                 return false;
             }
-            if (!comparePassword(args[0],
+            if(!comparePassword(args[0],
                     data.loadHash(player.getName()))) {
                 player.sendMessage(messages.getMessage("Error.WrongPassword"));
                 return false;
@@ -351,9 +354,10 @@ public class AuthMe extends JavaPlugin {
 
             String salt = Long.toHexString(
                     Double.doubleToLongBits(Math.random()));
-            boolean executed = data.updateAuth(player.getName(), pws.getSaltedHash(args[1], salt));
+            boolean executed = data.updateAuth(player.getName(), pws.
+                    getSaltedHash(args[1], salt));
 
-            if (!executed) {
+            if(!executed) {
                 player.sendMessage(messages.getMessage("Error.DatasourceError"));
                 MessageHandler.showError(
                         "Failed to update an auth due to an error in the datasource!");
@@ -363,21 +367,21 @@ public class AuthMe extends JavaPlugin {
             player.sendMessage(messages.getMessage(
                     "Command.ChangePasswordResponse"));
             MessageHandler.showInfo("Player " + player.getName()
-                    + " changed his password!");
+                                    + " changed his password!");
         }
 
-        if (commandLabel.equalsIgnoreCase("logout")) {
-            if (!(sender instanceof Player)) {
+        if(commandLabel.equalsIgnoreCase("logout")) {
+            if(!(sender instanceof Player)) {
                 return false;
             }
             Player player = (Player) sender;
 
-            if (!settings.LogoutEnabled()) {
+            if(!settings.LogoutEnabled()) {
                 player.sendMessage("Logging out is currently disabled!");
                 return false;
             }
 
-            if (!playercache.isPlayerAuthenticated(player)) {
+            if(!playercache.isPlayerAuthenticated(player)) {
                 player.sendMessage(messages.getMessage("Error.NotLogged"));
                 return false;
             }
@@ -386,32 +390,32 @@ public class AuthMe extends JavaPlugin {
 
             player.sendMessage(messages.getMessage("Command.LogoutResponse"));
             MessageHandler.showInfo("Player " + player.getName()
-                    + " logged out!");
+                                    + " logged out!");
         }
 
-        if (commandLabel.equalsIgnoreCase("unregister")) {
-            if (!(sender instanceof Player)) {
+        if(commandLabel.equalsIgnoreCase("unregister")) {
+            if(!(sender instanceof Player)) {
                 return false;
             }
             Player player = (Player) sender;
 
-            if (!settings.UnregisterEnabled()) {
+            if(!settings.UnregisterEnabled()) {
                 player.sendMessage("Unregistering is currently disabled!");
                 return false;
             }
-            if (!playercache.isPlayerRegistered(player)) {
+            if(!playercache.isPlayerRegistered(player)) {
                 player.sendMessage(messages.getMessage("Error.NotRegistered"));
                 return false;
             }
-            if (!playercache.isPlayerAuthenticated(player)) {
+            if(!playercache.isPlayerAuthenticated(player)) {
                 player.sendMessage(messages.getMessage("Error.NotLogged"));
                 return false;
             }
-            if (args.length != 1) {
+            if(args.length != 1) {
                 player.sendMessage("Usage: /unregister <password>");
                 return false;
             }
-            if (!comparePassword(args[0],
+            if(!comparePassword(args[0],
                     data.loadHash(player.getName()))) {
                 player.sendMessage(messages.getMessage("Error.WrongPassword"));
                 return false;
@@ -419,7 +423,7 @@ public class AuthMe extends JavaPlugin {
 
             boolean executed = data.removeAuth(player.getName());
 
-            if (!executed) {
+            if(!executed) {
                 player.sendMessage(messages.getMessage("Error.DatasourceError"));
                 MessageHandler.showError(
                         "Failed to remove an auth due to an error in the datasource!");
@@ -430,21 +434,21 @@ public class AuthMe extends JavaPlugin {
 
             player.sendMessage(messages.getMessage("Command.UnregisterResponse"));
             MessageHandler.showInfo("Player " + player.getName()
-                    + " is now unregistered!");
+                                    + " is now unregistered!");
         }
 
-        if (commandLabel.equalsIgnoreCase("authme")) {
+        if(commandLabel.equalsIgnoreCase("authme")) {
 
             String pre = "";
 
-            if (sender instanceof Player) {
+            if(sender instanceof Player) {
                 Player player = (Player) sender;
 
-                if (!player.isOp()) {
+                if(!player.isOp()) {
                     player.sendMessage("You dont have permission to do this!");
                     return false;
                 }
-                if (!playercache.isPlayerAuthenticated(player)) {
+                if(!playercache.isPlayerAuthenticated(player)) {
                     player.sendMessage(messages.getMessage("Error.NotLogged"));
                     return false;
                 }
@@ -452,7 +456,7 @@ public class AuthMe extends JavaPlugin {
                 pre = "/";
             }
 
-            if (args.length == 0) {
+            if(args.length == 0) {
                 sender.sendMessage(
                         "Usage: "
                         + pre
@@ -460,22 +464,22 @@ public class AuthMe extends JavaPlugin {
                 return false;
             }
 
-            if (args[0].equals("deleteauth")) {
-                if (args.length != 2) {
+            if(args[0].equals("deleteauth")) {
+                if(args.length != 2) {
                     sender.sendMessage("Usage: " + pre
-                            + "authme deleteauth <playername>");
+                                       + "authme deleteauth <playername>");
                     return false;
                 }
             }
 
             // /authme reload cache Command
-            if (args[0].equals("reloadcache")) {
-                if (!settings.ReloadEnabled()) {
+            if(args[0].equals("reloadcache")) {
+                if(!settings.ReloadEnabled()) {
                     sender.sendMessage(
                             "Reloading authentications is currently disabled!");
                     return false;
                 }
-                if (!settings.CachingEnabled()) {
+                if(!settings.CachingEnabled()) {
                     sender.sendMessage(
                             ChatColor.RED
                             + "Error: There is no need to reload the authentication cache. Caching is disabled in config anyway!");
@@ -493,7 +497,7 @@ public class AuthMe extends JavaPlugin {
             }
 
             // /authme reload config Command
-            if (args[0].equals("reloadconfig")) {
+            if(args[0].equals("reloadconfig")) {
                 File configFile = new File(Settings.PLUGIN_FOLDER, "config.yml");
                 settings = new Settings(configFile);
 
@@ -505,9 +509,9 @@ public class AuthMe extends JavaPlugin {
             }
 
             // /authme toggle regs Command
-            if (args[0].equals("toggleregs")) {
+            if(args[0].equals("toggleregs")) {
                 String key = "Commands.Users.RegisterEnabled";
-                if (settings.getBoolean(key, true)) {
+                if(settings.getBoolean(key, true)) {
                     settings.setProperty(key, false);
                     sender.sendMessage(
                             ChatColor.GREEN
@@ -521,13 +525,13 @@ public class AuthMe extends JavaPlugin {
             }
 
             // /authme delete auth Command
-            if (args[0].equals("deleteauth")) {
-                if (!settings.ResetEnabled()) {
+            if(args[0].equals("deleteauth")) {
+                if(!settings.ResetEnabled()) {
                     sender.sendMessage(
                             "Reseting a authentication is currently disabled!");
                     return false;
                 }
-                if (!data.isPlayerRegistered(args[1])) {
+                if(!data.isPlayerRegistered(args[1])) {
                     sender.sendMessage(messages.getMessage(
                             "Error.PlayerNotRegistered"));
                     return false;
@@ -535,7 +539,7 @@ public class AuthMe extends JavaPlugin {
 
                 boolean executed = data.removeAuth(args[1]);
 
-                if (!executed) {
+                if(!executed) {
                     sender.sendMessage(messages.getMessage(
                             "Error.DatasourceError"));
                     MessageHandler.showError(
@@ -545,14 +549,14 @@ public class AuthMe extends JavaPlugin {
 
                 // If the player is online, recreate his cache
                 Player delPlayer = getServer().getPlayer(args[1]);
-                if (delPlayer != null) {
+                if(delPlayer != null) {
                     playercache.recreateCache(delPlayer);
                 }
 
                 sender.sendMessage(ChatColor.GREEN
-                        + "This player is now unregistered!");
+                                   + "This player is now unregistered!");
                 MessageHandler.showInfo("Account of " + args[1]
-                        + " got deleted by command!");
+                                        + " got deleted by command!");
             }
 
         }
@@ -561,7 +565,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     public boolean checkAuth(Player player) {
-        if (playercache.isPlayerAuthenticated(player)) {
+        if(playercache.isPlayerAuthenticated(player)) {
             return true;
         }
         return !settings.ForceRegistration();
@@ -570,7 +574,7 @@ public class AuthMe extends JavaPlugin {
     public void performPlayerLogin(Player player) {
         playercache.setPlayerAuthenticated(player, true);
 
-        if (invcache.doesCacheExist(player.getName())) {
+        if(invcache.doesCacheExist(player.getName())) {
             InventoryArmour invarm = invcache.readCache(player.getName());
 
             ItemStack[] invstackbackup = invarm.getInventory();
@@ -578,23 +582,23 @@ public class AuthMe extends JavaPlugin {
 
             ItemStack[] armStackBackup = invarm.getArmour();
 
-            if (armStackBackup[3] != null) {
-                if (armStackBackup[3].getAmount() != 0) {
+            if(armStackBackup[3] != null) {
+                if(armStackBackup[3].getAmount() != 0) {
                     player.getInventory().setHelmet(armStackBackup[3]);
                 }
             }
-            if (armStackBackup[2] != null) {
-                if (armStackBackup[2].getAmount() != 0) {
+            if(armStackBackup[2] != null) {
+                if(armStackBackup[2].getAmount() != 0) {
                     player.getInventory().setChestplate(armStackBackup[2]);
                 }
             }
-            if (armStackBackup[1] != null) {
-                if (armStackBackup[1].getAmount() != 0) {
+            if(armStackBackup[1] != null) {
+                if(armStackBackup[1].getAmount() != 0) {
                     player.getInventory().setLeggings(armStackBackup[1]);
                 }
             }
-            if (armStackBackup[0] != null) {
-                if (armStackBackup[0].getAmount() != 0) {
+            if(armStackBackup[0] != null) {
+                if(armStackBackup[0].getAmount() != 0) {
                     player.getInventory().setBoots(armStackBackup[0]);
                 }
             }
@@ -605,19 +609,19 @@ public class AuthMe extends JavaPlugin {
 
     private boolean comparePassword(String password, String hash) {
         //MD5
-        if (hash.length() == 32) {
+        if(hash.length() == 32) {
             return hash.equals(pws.getMD5(password));
         }
 
         //SHA1
-        if (hash.length() == 40) {
+        if(hash.length() == 40) {
             return hash.equals(pws.getSHA1(password));
         }
 
         //SHA256 with salt
-        if (hash.contains("$")) {
+        if(hash.contains("$")) {
             String[] line = hash.split("\\$");
-            if (line.length > 3 && line[1].equals("SHA")) {
+            if(line.length > 3 && line[1].equals("SHA")) {
                 return hash.equals(pws.getSaltedHash(password, line[2]));
             } else {
                 return false;

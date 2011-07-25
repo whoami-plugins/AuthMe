@@ -62,6 +62,9 @@ Misc:
     # Algorithm hash (MD5, SHA256, SHA1).
     Hash: SHA256
 
+    # Language of Messages(en,ru,de)
+    Language: en
+
 ############################################################
 # +------------------------------------------------------+ #
 # |              Playername Restrictions                 | #

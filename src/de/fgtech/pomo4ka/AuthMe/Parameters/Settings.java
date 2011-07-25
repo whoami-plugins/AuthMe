@@ -1,9 +1,7 @@
 package de.fgtech.pomo4ka.AuthMe.Parameters;
 
-import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
+import de.fgtech.pomo4ka.AuthMe.util.Utility;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,83 +21,7 @@ public class Settings extends Configuration {
             load();
             updateFile();
         } else {
-            writeDefaultFile();
-        }
-    }
-
-    private void writeFile() {
-
-        MySQLConnectionHost();
-        MySQLConnectionPort();
-        MySQLConnectionDatabase();
-        MySQLConnectionUsername();
-        MySQLConnectionPassword();
-        MySQLCustomTableName();
-        MySQLCustomColumnName();
-        MySQLCustomColumnPassword();
-
-        RegisterEnabled();
-        LoginEnabled();
-        ChangePasswordEnabled();
-        UnregisterEnabled();
-        ResetEnabled();
-        ReloadEnabled();
-        ForceRegistration();
-        LoginSessionsEnabled();
-        MaximalTimePeriod();
-        PlayerNameMinLength();
-        PlayerNameMaxLength();
-        Hash();
-        PlayerNameRegex();
-        WalkAroundSpawnEnabled();
-        WalkAroundSpawnRadius();
-        AllowUnregisteredChat();
-        alertInterval();
-        CachingEnabled();
-        SessionIPCheckEnabled();
-        KickOnWrongPassword();
-        loginTimeout();
-        getCustomInformationKeys();
-        AllowAllowNonLoggedInCommand();
-        AllowAllowNonRegisteredCommand();
-        AllowPlayerUnrestrictedAccess();
-        KickNonRegistered();
-
-        DataSource();
-
-        this.save();
-    }
-
-    public final void writeDefaultFile() {
-        File actual = new File(Settings.PLUGIN_FOLDER, "config.yml");
-        if(!actual.exists()) {
-
-            InputStream input = this.getClass().getResourceAsStream("/config.yml");
-            if(input != null) {
-                FileOutputStream output = null;
-                try {
-                    output = new FileOutputStream(actual);
-                    byte[] buf = new byte[8192];
-                    int length = 0;
-
-                    while((length = input.read(buf)) > 0) {
-                        output.write(buf, 0, length);
-                    }
-
-                    MessageHandler.showInfo("Default file written: config.yml");
-                } catch(Exception e) {
-                    MessageHandler.showStackTrace(e);
-                } finally {
-                    try {
-                        input.close();
-                    } catch(Exception e) {
-                    }
-                    try {
-                        output.close();
-                    } catch(Exception e) {
-                    }
-                }
-            }
+            Utility.loadFileFromJar("config.yml");
         }
     }
 
@@ -107,6 +29,11 @@ public class Settings extends Configuration {
         String key = "Misc.Hash";
         if(this.getString(key) == null) {
             Hash();
+            this.save();
+        }
+        key = "Misc.Language";
+        if(this.getString(key) == null) {
+            Language();
             this.save();
         }
     }
@@ -173,6 +100,14 @@ public class Settings extends Configuration {
             this.setProperty(key, true);
         }
         return this.getBoolean(key, true);
+    }
+
+    public String Language() {
+        String key = "Misc.Language";
+        if(this.getString(key) == null) {
+            this.setProperty(key, "en");
+        }
+        return this.getString(key);
     }
 
     public int PlayerNameMinLength() {

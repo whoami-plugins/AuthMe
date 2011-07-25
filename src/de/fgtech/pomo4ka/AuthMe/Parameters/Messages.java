@@ -10,12 +10,17 @@ public class Messages extends Configuration {
     private static final ConcurrentHashMap<String, String> defaults = new ConcurrentHashMap<String, String>();
 
     public Messages(File f) {
-        super(f);
+        this(f,true);
+    }
 
+    public Messages(File f, boolean saveDefaults) {
+        super(f);
         load();
         loadDefaults();
         setDefaults();
-        save();
+        if(saveDefaults) {
+            save();
+        }
     }
 
     private void loadDefaults() {

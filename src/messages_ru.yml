@@ -1,0 +1,30 @@
+Command:
+    UnregisterResponse: '&aВам аккаунт удален!'
+    LogoutResponse: '&aВы успешно вышли!'
+    RegisterResponse: '&aПароль для входа: &e%1'
+    LoginResponse: '&aУспешная авторизация. Добро пожаловать.'
+    RegisterExtraInfoCheckFailed: '&cВаш %1 не соответствует правилам!'
+    ChangePasswordResponse: '&aПароль успешно изменен!'
+Sessions:
+    Hint: '&aВы автоматически определены и вошли. Добро пожаловать.'
+Kick:
+    NotRegistered: 'Пожалуйста, посетите наш сайт для регистрации аккаунта!'
+    OtherUserLoggedIn: 'Игрок с таким ником уже зарегистрирован! Попробуйте другой!'
+    DisallowedCharacters: 'Ваш ник(%1), содержит неправильные символы или слишком длинный!'
+Alert:
+    Login: '&cПожалуйста авторизуйтесь /login <пароль>'
+    Registration: '&cПожалуйста зарегистрируйтесь /register <пароль>'
+    PluginReloaded: '&cСервер был перезагружен! Пожалуйста войдите снова...'
+JoinMessage:
+    Command: '&eРегистрация /register <пароль>'
+    ForceRegistration: '&dВы еще не зарегистрированы!'
+    FreeRegistration: '&dПредлагаем Вам зарегистрировать на нашем сервере для защиты Вашего аккаунта!'
+Error:
+    DatasourceError: '&cВнутренняя ошибка! Пожалуйста сообщите администрации!'
+    NotRegistered: '&cОшибка: Вы не зарегистрированы!'
+    NotLogged: '&cОшибка: Вы не зарегистрированы!'
+    WrongPassword: '&cОшибка: Вы ввели неправильный пароль!'
+    PlayerNotRegistered: '&cОшибка: Этот игрок не зарегистрирован!'
+    AlreadyRegistered: '&cОшибка: Вы уже зарегистрированы!'
+    InvalidPassword: '&cНеправильный пароль'
+    AlreadyLoggedIn: '&cОшибка: Вы уже вошли!'

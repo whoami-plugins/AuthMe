@@ -1,0 +1,30 @@
+Command:
+    UnregisterResponse: '&aDu bist jetzt registriert!'
+    LogoutResponse: '&aDu hast dich erfolgreich abgemeldet'
+    RegisterResponse: '&a Du hast dich mit den Passwort %1 registriert'
+    LoginResponse: '&aPasswort akzeptiert. Willkommen'
+    RegisterExtraInfoCheckFailed: '&cDein %1 passt nicht zu unseren Regeln!'
+    ChangePasswordResponse: '&aPasswort erfolgreich geändert!'
+Sessions:
+    Hint: '&aDu wurdest automatisch angemeldet!'
+Kick:
+    NotRegistered: 'Bitte besuche unsere Webseite um dich zu registrieren!'
+    OtherUserLoggedIn: 'Es ist bereits ein Spieler mit diesen Namen angemeldet'
+    DisallowedCharacters: 'Dein Name(%1) ist nicht gesetzt, oder beinhaltet illegale Buchstaben!'
+Alert:
+    Login: '&cBitte melde dich mit /login <password> an'
+    Registration: '&cBitte registrier dich mit /register <password>'
+    PluginReloaded: '&cDer Server wurde neu geladen bitte melde dich erneut an!'
+JoinMessage:
+    Command: '&eUm dich zu registrieren tippe /register <password>'
+    ForceRegistration: '&dDu musst dich registrieren bevor du spielen kannst!'
+    FreeRegistration: '&dRegistrier dich um deinen Namen an ein Passwort zu binden!'
+Error:
+    DatasourceError: '&cFehler! Bitte melde dich bei einem Admin'
+    NotRegistered: '&cFehler: Du bist nicht registriert!'
+    NotLogged: '&cFehler: Du bist nicht angemeldet!'
+    WrongPassword: '&cFehler: Falsches Passwort!'
+    PlayerNotRegistered: '&cFehler: Spieler nicht registriert!'
+    AlreadyRegistered: '&cFehler: Du bist bereits registriert!'
+    InvalidPassword: '&cFalsches Passwort'
+    AlreadyLoggedIn: '&cFehler: Du bist bereits angemeldet!'

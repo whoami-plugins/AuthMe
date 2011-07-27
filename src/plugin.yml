@@ -1,8 +1,8 @@
 name: AuthMe
-main: de.fgtech.pomo4ka.AuthMe.AuthMe
+author:  Fabe & Pomo4ka & Whoami
+description: AuthMe prevents people, which aren't logged in, from doing stuff like placing blocks, moving, typing commands or seeing the inventory of the current player.
 version: 0.85
-author:  fabe & pomo4ka & whoami
-description: High Performance Authorization plugin.
+main: de.fgtech.pomo4ka.AuthMe.AuthMe
 commands:
     login:
         description: With this command a player can login!

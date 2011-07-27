@@ -34,12 +34,6 @@ import de.fgtech.pomo4ka.AuthMe.util.Utility;
 
 public class AuthMe extends JavaPlugin {
 
-    private final AuthMePlayerListener playerListener = new AuthMePlayerListener(
-            this);
-    private final AuthMeBlockListener blockListener = new AuthMeBlockListener(
-            this);
-    private final AuthMeEntityListener entityListener = new AuthMeEntityListener(
-            this);
     private PasswordSecurity pws;
     private Settings settings;
     private Messages messages;
@@ -97,16 +91,12 @@ public class AuthMe extends JavaPlugin {
             data = new DataCache(new FlatfileData(), settings.CachingEnabled());
         }
 
-        // Outputs the time that was needed for loading the registrations
-
         if(settings.CachingEnabled()) {
             MessageHandler.showInfo("Cache for registrations is enabled!");
         }
 
         MessageHandler.showInfo("There are " + data.getRegisteredPlayerAmount()
                                 + " registered players in database!");
-
-
         MessageHandler.showInfo("Version " + this.getDescription().getVersion()
                                 + " is enabled!");
 
@@ -116,8 +106,11 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Setting up the listeners
-        PluginManager pm = getServer().getPluginManager();
+        AuthMePlayerListener playerListener = new AuthMePlayerListener(this);
+        AuthMeBlockListener blockListener = new AuthMeBlockListener(this);
+        AuthMeEntityListener entityListener = new AuthMeEntityListener(this);
 
+        PluginManager pm = getServer().getPluginManager();
         pm.registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, playerListener,
                 Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener,
@@ -187,8 +180,7 @@ public class AuthMe extends JavaPlugin {
                 return false;
             }
 
-            Map<String, String> customFields = settings.
-                    getCustomInformationFields();
+            Map<String, String> customFields = settings.getCustomInformationFields();
             Map<String, String> customInformation = new HashMap<String, String>();
 
             // Do we have custom tables and mysql as datasource?
@@ -640,10 +632,6 @@ public class AuthMe extends JavaPlugin {
 
     public Messages getMessages() {
         return messages;
-    }
-
-    public AuthMePlayerListener getPlayerListener() {
-        return playerListener;
     }
 
     public PlayerCache getPlayercache() {

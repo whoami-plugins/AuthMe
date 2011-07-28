@@ -145,7 +145,7 @@ public class AuthMe extends JavaPlugin {
             boolean regged = data.isPlayerRegistered(player.getName());
 
             // Create PlayerCache
-            playercache.createCache(player, regged, false);
+            playercache.createCache(player, regged, false, player.getLocation());
             player.sendMessage(messages.getMessage("Alert.PluginReloaded"));
         }
 
@@ -250,6 +250,9 @@ public class AuthMe extends JavaPlugin {
 
             playercache.setPlayerAuthenticated(player, true);
             playercache.setPlayerRegistered(player, true);
+            if(!settings.WalkAroundSpawnEnabled() || settings.ForceRegistration()) {
+                player.teleport(playercache.getPlayerData(player).getSpawn());
+            }
 
             player.sendMessage(messages.getMessage("Command.RegisterResponse",
                     password));
@@ -307,6 +310,9 @@ public class AuthMe extends JavaPlugin {
 
             LoginTimer.unscheduleLoginTimer(this, player);
             performPlayerLogin(player);
+            if(!settings.WalkAroundSpawnEnabled()) {
+                player.teleport(playercache.getPlayerData(player).getSpawn());
+            }
 
             player.sendMessage(messages.getMessage("Command.LoginResponse"));
             MessageHandler.showInfo("Player " + player.getName()
@@ -422,7 +428,7 @@ public class AuthMe extends JavaPlugin {
                 return false;
             }
 
-            playercache.recreateCache(player);
+            playercache.recreateCache(player,player.getLocation());
 
             player.sendMessage(messages.getMessage("Command.UnregisterResponse"));
             MessageHandler.showInfo("Player " + player.getName()
@@ -542,7 +548,7 @@ public class AuthMe extends JavaPlugin {
                 // If the player is online, recreate his cache
                 Player delPlayer = getServer().getPlayer(args[1]);
                 if(delPlayer != null) {
-                    playercache.recreateCache(delPlayer);
+                    playercache.recreateCache(delPlayer, delPlayer.getLocation());
                 }
 
                 sender.sendMessage(ChatColor.GREEN

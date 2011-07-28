@@ -50,7 +50,7 @@ public class AuthMePlayerListener extends PlayerListener {
         if(p2 != null) {
             if(plugin.getPlayercache().isPlayerAuthenticated(p2)) {
                 event.disallow(Result.KICK_OTHER,
-                    plugin.getMessages().getMessage("Kick.OtherUserLoggedIn"));
+                        plugin.getMessages().getMessage("Kick.OtherUserLoggedIn"));
             }
         }
 
@@ -87,11 +87,11 @@ public class AuthMePlayerListener extends PlayerListener {
         Player player = event.getPlayer();
 
         // Is player really registered?
-        boolean regged = plugin.getData().isPlayerRegistered(
-                player.getName());
+        boolean regged = plugin.getData().isPlayerRegistered(player.getName());
 
         // Create PlayerCache
-        plugin.getPlayercache().createCache(player, regged, false);
+        plugin.getPlayercache().createCache(player, regged, false, player.
+                getLocation());
 
         // Check if the player has unrestricted access due a config setting
         List<Object> l = plugin.getSettings().AllowPlayerUnrestrictedAccess();
@@ -106,14 +106,16 @@ public class AuthMePlayerListener extends PlayerListener {
                         "JoinMessage.ForceRegistration"));
                 player.sendMessage(plugin.getMessages().getMessage(
                         "JoinMessage.Command"));
-                return;
             } else {
                 player.sendMessage(plugin.getMessages().getMessage(
                         "JoinMessage.FreeRegistration"));
                 player.sendMessage(plugin.getMessages().getMessage(
                         "JoinMessage.Command"));
-                return;
             }
+            if(!plugin.getSettings().WalkAroundSpawnEnabled()) {
+                player.teleport(player.getWorld().getSpawnLocation());
+            }
+            return;
         }
         //plugin.playercache.setPlayerAuthenticated(player, true);
         // --The following section is only executed for registered players!--
@@ -124,12 +126,12 @@ public class AuthMePlayerListener extends PlayerListener {
             if(plugin.getSessionhandler().isSessionValid(player)) {
                 // perform session login
                 plugin.performPlayerLogin(player);
-                player.sendMessage(plugin.getMessages().getMessage("Sessions.Hint"));
+                player.sendMessage(plugin.getMessages().getMessage(
+                        "Sessions.Hint"));
                 MessageHandler.showInfo(
                         "Player " + player.getName()
                         + " was automatically logged in by session.");
                 return;
-
             }
         }
 
@@ -146,11 +148,8 @@ public class AuthMePlayerListener extends PlayerListener {
         // teleport him to spawn
         if(player.getHealth() <= 0) {
             plugin.getInvcache().removeCache(player.getName());
-
-            Location spawn = player.getWorld().getSpawnLocation();
-
-            player.teleport(spawn);
         }
+        player.teleport(player.getWorld().getSpawnLocation());
 
         player.getInventory().clear();
         player.getInventory().setHelmet(null);
@@ -285,7 +284,8 @@ public class AuthMePlayerListener extends PlayerListener {
         }
 
         //BukkitContrib fix; Those faggots can not code and should be lined up and shot
-        if(event.getMessage().equals("/0.1.3") || event.getMessage().equals("/0.1.6") || event.getMessage().equals("/0.1.7")) {
+        if(event.getMessage().equals("/0.1.3") || event.getMessage().equals(
+                "/0.1.6") || event.getMessage().equals("/0.1.7")) {
             return;
         }
 

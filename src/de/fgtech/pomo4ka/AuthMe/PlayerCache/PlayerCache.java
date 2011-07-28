@@ -2,6 +2,7 @@ package de.fgtech.pomo4ka.AuthMe.PlayerCache;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class PlayerCache {
@@ -12,10 +13,10 @@ public class PlayerCache {
     }
 
     public void createCache(Player player, boolean registered,
-            boolean authenticated) {
+            boolean authenticated, Location spawn) {
 
         if(!playerDatatable.containsKey(player)) {
-            PlayerData data = new PlayerData(registered, authenticated);
+            PlayerData data = new PlayerData(registered, authenticated, spawn);
             playerDatatable.put(player, data);
         }
 
@@ -27,12 +28,12 @@ public class PlayerCache {
         }
     }
 
-    public void recreateCache(Player player) {
+    public void recreateCache(Player player, Location spawn) {
         removeCache(player);
-        createCache(player, false, false);
+        createCache(player, false, false, spawn);
     }
 
-    private PlayerData getPlayerData(Player player) {
+    public PlayerData getPlayerData(Player player) {
         if(playerDatatable.containsKey(player)) {
             return playerDatatable.get(player);
         }

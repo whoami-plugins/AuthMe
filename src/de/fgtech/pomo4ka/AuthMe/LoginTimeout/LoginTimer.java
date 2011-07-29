@@ -54,7 +54,7 @@ public class LoginTimer {
             }
         }
     }
-    private final static HashMap<String, Integer> tasks = new HashMap<String, Integer>();
+    private final static HashMap<String, Integer> tasks = new HashMap<>();
 
     public static void scheduleLoginTimer(AuthMe plugin, Player player) {
         if(plugin.getSettings().loginTimeout() <= 0) {

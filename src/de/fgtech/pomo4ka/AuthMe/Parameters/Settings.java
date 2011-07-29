@@ -185,7 +185,7 @@ public class Settings extends Configuration {
     public List<Object> AllowAllowNonLoggedInCommand() {
         String key = "Misc.AllowNonLoggedIn.Commands";
         if(this.getString(key) == null) {
-            List<String> arg1 = new ArrayList<String>();
+            List<String> arg1 = new ArrayList<>();
             arg1.add("uptime");
             this.setProperty(key, arg1);
         }
@@ -195,7 +195,7 @@ public class Settings extends Configuration {
     public List<Object> AllowPlayerUnrestrictedAccess() {
         String key = "Misc.AllowPlayerUnrestrictedAccess";
         if(this.getString(key) == null) {
-            List<String> arg1 = new ArrayList<String>();
+            List<String> arg1 = new ArrayList<>();
             arg1.add("Bot01");
             this.setProperty(key, arg1);
         }
@@ -205,7 +205,7 @@ public class Settings extends Configuration {
     public List<Object> AllowAllowNonRegisteredCommand() {
         String key = "Misc.AllowNonRegistered.Commands";
         if(this.getString(key) == null) {
-            List<String> arg1 = new ArrayList<String>();
+            List<String> arg1 = new ArrayList<>();
             arg1.add("uptime");
             this.setProperty(key, arg1);
         }
@@ -344,7 +344,7 @@ public class Settings extends Configuration {
     public Map<String, String> getCustomInformationFields() {
         List<String> keys = getCustomInformationKeys();
 
-        Map<String, String> hashes = new HashMap<String, String>();
+        Map<String, String> hashes = new HashMap<>();
 
         if(keys != null) {
             for(String keyEnd : keys) {

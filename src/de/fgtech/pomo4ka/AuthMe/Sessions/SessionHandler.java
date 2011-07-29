@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class SessionHandler {
 
-    private Map<String, Session> sessionTable = new HashMap<String, Session>();
+    private Map<String, Session> sessionTable = new HashMap<>();
     private int maxSessionTime;
     private boolean ipCheck;
 

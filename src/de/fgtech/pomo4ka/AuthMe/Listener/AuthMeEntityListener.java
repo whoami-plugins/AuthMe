@@ -7,7 +7,6 @@ import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import de.fgtech.pomo4ka.AuthMe.AuthMe;
-import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
 
 /**
  * AuthMe block listener

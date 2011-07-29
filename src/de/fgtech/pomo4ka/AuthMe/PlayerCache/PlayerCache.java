@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class PlayerCache {
 
-    private Map<Player, PlayerData> playerDatatable = new HashMap<Player, PlayerData>();
+    private Map<Player, PlayerData> playerDatatable = new HashMap<>();
 
     public PlayerCache() {
     }

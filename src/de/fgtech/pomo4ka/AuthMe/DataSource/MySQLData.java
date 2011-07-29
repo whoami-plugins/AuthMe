@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,10 +71,10 @@ public class MySQLData implements DataSource {
 
             // Statements allow to issue SQL queries to the database
             statement = connection.createStatement();
-        } catch(Exception e) {
+        } catch(ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException e) {
             MessageHandler.showError(
                     "[MySQL] Unable to establish a connection to your MySQL database!");
-            System.out.println(e);
+            MessageHandler.showStackTrace(e);
         }
     }
 
@@ -125,7 +126,7 @@ public class MySQLData implements DataSource {
 
     @Override
     public HashMap<String, String> loadAllAuths() {
-        HashMap<String, String> regcache = new HashMap<String, String>();
+        HashMap<String, String> regcache = new HashMap<>();
         try {
             if(connection.isClosed()) {
                 connect();

@@ -7,7 +7,7 @@ import org.bukkit.util.config.Configuration;
 
 public class Messages extends Configuration {
 
-    private static final ConcurrentHashMap<String, String> defaults = new ConcurrentHashMap<String, String>();
+    private static final ConcurrentHashMap<String, String> defaults = new ConcurrentHashMap<>();
 
     public Messages(File f) {
         this(f,true);

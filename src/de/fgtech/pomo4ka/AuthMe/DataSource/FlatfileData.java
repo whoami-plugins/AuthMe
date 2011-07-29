@@ -27,17 +27,14 @@ public class FlatfileData implements DataSource {
 
     @Override
     public HashMap<String, String> loadAllAuths() {
-        HashMap<String, String> regcache = new HashMap<String, String>();
+        HashMap<String, String> regcache = new HashMap<>();
 
         final File file = new File(Settings.AUTH_FILE);
 
         if(!file.exists()) {
             return regcache;
         }
-
-        Scanner reader = null;
-        try {
-            reader = new Scanner(file);
+        try (Scanner reader = new Scanner(file)) {
             while(reader.hasNextLine()) {
                 final String line = reader.nextLine();
 
@@ -52,12 +49,8 @@ public class FlatfileData implements DataSource {
                 }
                 regcache.put(in[0].toLowerCase(), in[1]);
             }
-        } catch(final Exception e) {
+        } catch (FileNotFoundException e) {
             MessageHandler.showStackTrace(e);
-        } finally {
-            if(reader != null) {
-                reader.close();
-            }
         }
         return regcache;
     }
@@ -174,10 +167,7 @@ public class FlatfileData implements DataSource {
         if(!file.exists()) {
             return null;
         }
-
-        Scanner reader = null;
-        try {
-            reader = new Scanner(file);
+        try (Scanner reader = new Scanner(file)) {
             while(reader.hasNextLine()) {
                 final String line = reader.nextLine();
 
@@ -195,12 +185,8 @@ public class FlatfileData implements DataSource {
                     return in[1];
                 }
             }
-        } catch(final Exception e) {
+        } catch(FileNotFoundException e) {
             MessageHandler.showStackTrace(e);
-        } finally {
-            if(reader != null) {
-                reader.close();
-            }
         }
         return null;
     }
@@ -218,10 +204,7 @@ public class FlatfileData implements DataSource {
         if(!file.exists()) {
             return 0;
         }
-
-        Scanner reader = null;
-        try {
-            reader = new Scanner(file);
+        try (Scanner reader = new Scanner(file)) {
             while(reader.hasNextLine()) {
                 final String line = reader.nextLine();
 
@@ -237,12 +220,8 @@ public class FlatfileData implements DataSource {
 
                 counter++;
             }
-        } catch(final Exception e) {
+        } catch(FileNotFoundException e) {
             MessageHandler.showStackTrace(e);
-        } finally {
-            if(reader != null) {
-                reader.close();
-            }
         }
         return counter;
     }

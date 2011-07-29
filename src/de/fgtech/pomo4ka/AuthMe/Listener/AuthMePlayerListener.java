@@ -290,7 +290,7 @@ public class AuthMePlayerListener extends PlayerListener {
         }
 
         // Enable commands specified per config
-        List<Object> cmdList = new ArrayList<Object>();
+        List<Object> cmdList = new ArrayList<>();
         if(plugin.getPlayercache().isPlayerRegistered(player)) {
             if(!plugin.getSettings().AllowAllowNonLoggedInCommand().isEmpty()) {
                 cmdList = plugin.getSettings().AllowAllowNonLoggedInCommand();

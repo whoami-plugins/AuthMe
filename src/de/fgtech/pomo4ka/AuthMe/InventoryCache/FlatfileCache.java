@@ -8,6 +8,7 @@ import java.util.Scanner;
 import org.bukkit.inventory.ItemStack;
 
 import de.fgtech.pomo4ka.AuthMe.Parameters.Settings;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class FlatfileCache {
@@ -80,16 +81,13 @@ public class FlatfileCache {
 		final File file = new File(Settings.CACHE_FOLDER + "/" + playername
 				+ ".cache");
 
-		ArrayList<ItemStack> stacki = new ArrayList<ItemStack>();
-		ArrayList<ItemStack> stacka = new ArrayList<ItemStack>();
+		ArrayList<ItemStack> stacki = new ArrayList<>();
+		ArrayList<ItemStack> stacka = new ArrayList<>();
 
 		if (!file.exists()) {
 			return new InventoryArmour(stacki.toArray(new ItemStack[0]), stacka.toArray(new ItemStack[0]));
 		}
-
-		Scanner reader = null;
-		try {
-			reader = new Scanner(file);
+		try (Scanner reader = new Scanner(file)) {
 
 			while (reader.hasNextLine()) {
 				final String line = reader.nextLine();
@@ -116,12 +114,8 @@ public class FlatfileCache {
 				}
 
 			}
-		} catch (final Exception e) {
+		} catch (FileNotFoundException e) {
             MessageHandler.showStackTrace(e);
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
 		}
 		return new InventoryArmour(stacki.toArray(new ItemStack[0]), stacka.toArray(new ItemStack[0]));
 	}

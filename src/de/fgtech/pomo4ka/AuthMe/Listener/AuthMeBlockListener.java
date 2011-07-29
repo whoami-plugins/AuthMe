@@ -6,7 +6,6 @@ import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import de.fgtech.pomo4ka.AuthMe.AuthMe;
-import de.fgtech.pomo4ka.AuthMe.MessageHandler.MessageHandler;
 
 /**
  * AuthMe block listener
